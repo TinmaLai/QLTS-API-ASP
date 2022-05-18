@@ -1,0 +1,14 @@
+{
+  "version": 2,
+  "dgSpecHash": "v7EPq8JZ6cfeq7lFXTZdjyevmnsMRr0Zfzp1RIG/gX1jptyxI/mVkG249DQ+XI8oudrTSMwMHiFSOOlfM1AZQg==",
+  "success": true,
+  "projectFilePath": "F:\\download\\laptrinh\\InternMisa\\dotnet\\MISA.Web03.NBTIN\\MISA.QLTS.CORE\\MISA.QLTS.CORE.csproj",
+  "expectedPackageFiles": [
+    "C:\\Users\\Admin\\.nuget\\packages\\microsoft.aspnetcore.jsonpatch\\6.0.5\\microsoft.aspnetcore.jsonpatch.6.0.5.nupkg.sha512",
+    "C:\\Users\\Admin\\.nuget\\packages\\microsoft.aspnetcore.mvc.newtonsoftjson\\6.0.5\\microsoft.aspnetcore.mvc.newtonsoftjson.6.0.5.nupkg.sha512",
+    "C:\\Users\\Admin\\.nuget\\packages\\microsoft.csharp\\4.7.0\\microsoft.csharp.4.7.0.nupkg.sha512",
+    "C:\\Users\\Admin\\.nuget\\packages\\newtonsoft.json\\13.0.1\\newtonsoft.json.13.0.1.nupkg.sha512",
+    "C:\\Users\\Admin\\.nuget\\packages\\newtonsoft.json.bson\\1.0.2\\newtonsoft.json.bson.1.0.2.nupkg.sha512"
+  ],
+  "logs": []
+}

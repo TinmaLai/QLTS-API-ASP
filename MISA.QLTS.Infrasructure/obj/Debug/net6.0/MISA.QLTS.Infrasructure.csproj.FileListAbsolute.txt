@@ -1,0 +1,15 @@
+F:\download\laptrinh\InternMisa\dotnet\MISA.Web03.NBTIN\MISA.QLTS.Infrasructure\bin\Debug\net6.0\MISA.QLTS.Infrasructure.deps.json
+F:\download\laptrinh\InternMisa\dotnet\MISA.Web03.NBTIN\MISA.QLTS.Infrasructure\bin\Debug\net6.0\MISA.QLTS.Infrasructure.dll
+F:\download\laptrinh\InternMisa\dotnet\MISA.Web03.NBTIN\MISA.QLTS.Infrasructure\bin\Debug\net6.0\MISA.QLTS.Infrasructure.pdb
+F:\download\laptrinh\InternMisa\dotnet\MISA.Web03.NBTIN\MISA.QLTS.Infrasructure\bin\Debug\net6.0\MISA.QLTS.CORE.dll
+F:\download\laptrinh\InternMisa\dotnet\MISA.Web03.NBTIN\MISA.QLTS.Infrasructure\bin\Debug\net6.0\MISA.QLTS.CORE.pdb
+F:\download\laptrinh\InternMisa\dotnet\MISA.Web03.NBTIN\MISA.QLTS.Infrasructure\obj\Debug\net6.0\MISA.QLTS.Infrasructure.csproj.AssemblyReference.cache
+F:\download\laptrinh\InternMisa\dotnet\MISA.Web03.NBTIN\MISA.QLTS.Infrasructure\obj\Debug\net6.0\MISA.QLTS.Infrasructure.GeneratedMSBuildEditorConfig.editorconfig
+F:\download\laptrinh\InternMisa\dotnet\MISA.Web03.NBTIN\MISA.QLTS.Infrasructure\obj\Debug\net6.0\MISA.QLTS.Infrasructure.AssemblyInfoInputs.cache
+F:\download\laptrinh\InternMisa\dotnet\MISA.Web03.NBTIN\MISA.QLTS.Infrasructure\obj\Debug\net6.0\MISA.QLTS.Infrasructure.AssemblyInfo.cs
+F:\download\laptrinh\InternMisa\dotnet\MISA.Web03.NBTIN\MISA.QLTS.Infrasructure\obj\Debug\net6.0\MISA.QLTS.Infrasructure.csproj.CoreCompileInputs.cache
+F:\download\laptrinh\InternMisa\dotnet\MISA.Web03.NBTIN\MISA.QLTS.Infrasructure\obj\Debug\net6.0\MISA.QLTS.Infrasructure.csproj.CopyComplete
+F:\download\laptrinh\InternMisa\dotnet\MISA.Web03.NBTIN\MISA.QLTS.Infrasructure\obj\Debug\net6.0\MISA.QLTS.Infrasructure.dll
+F:\download\laptrinh\InternMisa\dotnet\MISA.Web03.NBTIN\MISA.QLTS.Infrasructure\obj\Debug\net6.0\refint\MISA.QLTS.Infrasructure.dll
+F:\download\laptrinh\InternMisa\dotnet\MISA.Web03.NBTIN\MISA.QLTS.Infrasructure\obj\Debug\net6.0\MISA.QLTS.Infrasructure.pdb
+F:\download\laptrinh\InternMisa\dotnet\MISA.Web03.NBTIN\MISA.QLTS.Infrasructure\obj\Debug\net6.0\ref\MISA.QLTS.Infrasructure.dll
