@@ -8,6 +8,7 @@ using System.Linq;
 using System.Text;
 using System.Threading.Tasks;
 using Dapper;
+using System.Text.RegularExpressions;
 
 namespace MISA.QLTS.Infrasructure.Repository
 {
@@ -84,30 +85,114 @@ namespace MISA.QLTS.Infrasructure.Repository
 
         //    return fixedAsset;
         //}
+        //public string getNewCode()
+        //{
+
+        //    // Truy vấn ra danh sách các mã có tiền tố là TS
+        //    string sqlCommand = $"SELECT FixedAssetCode FROM FixedAsset WHERE FixedAssetCode IS NOT NULL AND FixedAssetCode LIKE '%TS%' ORDER BY  LENGTH(FixedAssetCode) DESC, FixedAssetCode DESC";
+        //    // Lấy bản ghi cuối cùng (giá trị gần nhất)
+        //    var FixedAssetCode = _sqlConnection.QueryFirstOrDefault<string>(sqlCommand);
+
+        //    int currentMax = 0;
+        //    int codeValue = int.Parse(FixedAssetCode.Substring(2).ToString());
+        //    if (currentMax < codeValue)
+        //    {
+        //        currentMax = codeValue;
+        //    }
+        //    currentMax = currentMax + 1;
+        //    string newAssetCode = "TS";
+        //    for (int i = 1; i < FixedAssetCode.Length - Math.Floor(Math.Log10(currentMax) + 2); i++)
+        //    {
+        //        newAssetCode += "0";
+        //    }
+        //    newAssetCode += currentMax;
+        //    return newAssetCode;
+        //}
+        public bool IsNumber(string pText)
+        {
+            Regex regex = new Regex(@"^[-+]?[0-9]*.?[0-9]+$");
+            return regex.IsMatch(pText);
+        }
         public string getNewCode()
         {
-            
-            // Truy vấn ra danh sách các mã có tiền tố là TS
-            string sqlCommand = $"SELECT FixedAssetCode FROM FixedAsset WHERE FixedAssetCode IS NOT NULL AND FixedAssetCode LIKE '%TS%' ORDER BY  LENGTH(FixedAssetCode) DESC, FixedAssetCode DESC";
-            // Lấy bản ghi cuối cùng (giá trị gần nhất)
-            var FixedAssetCode = _sqlConnection.QueryFirstOrDefault<string>(sqlCommand);
+            // câu lệnh sql lấy mã tài sản theo ngày giảm dần;
+            string sqlCommand = "SELECT FixedAssetCode FROM FixedAsset ORDER BY CreatedDate DESC";
 
+            // Lấy mã tài sản gần nhất
+            var AssetCode = _sqlConnection.QueryFirstOrDefault<string>(sql: sqlCommand);
+
+            // trả về mảng chuỗi và số riêng biệt.
+            string[] output = Regex.Matches(AssetCode, "[0-9]+|[^0-9]+")
+            .Cast<Match>()
+            .Select(match => match.Value)
+            .ToArray();
+
+            // khai báo giá trị sau khi cộng
             int currentMax = 0;
-            int codeValue = int.Parse(FixedAssetCode.Substring(2).ToString());
-            if (currentMax < codeValue)
+
+            var valueAssetCode = "";
+            var numberAssetCode = "";
+            // khai báo mã tài sản mới trả vê
+            string newAssetCode = "";
+            string saveValue = "";
+            string newAssetCodeValue = "";
+            var checkNumber = false;
+            // nếu mảng trả về lớn hơn 1 phần
+            // 111ABC
+            for (var i = 0; i < output.Length; i++)
             {
-                currentMax = codeValue;
+                if (IsNumber(output[output.Length - 1]) == false)
+                {
+                    newAssetCode = saveValue + output[i] + 1;
+
+                }
+                else
+                {
+                    newAssetCodeValue = saveValue;
+                }
+
+                saveValue += output[i];
+
             }
-            currentMax = currentMax + 1;
-            string newAssetCode = "TS";
-            for (int i = 1; i < FixedAssetCode.Length - Math.Floor(Math.Log10(currentMax) + 2); i++)
+
+            if (saveValue != "")
             {
-                newAssetCode += "0";
+                if (IsNumber(output[output.Length - 1]) == true)
+                {
+                    //chuyển chuỗi về dạng số nếu có số 0;
+                    var partNumber = int.Parse(output[output.Length - 1]);
+                    if (currentMax < partNumber)
+                    {
+                        // giá trị được tăng lên 1
+                        currentMax = partNumber + 1;
+                    }
+
+                    // Ghép chuỗi;
+                    newAssetCode = newAssetCodeValue + currentMax;
+                    // Nếu chuỗi hiện tại mà nhỏ hơn chuỗi lấy về từ sql
+                    if (newAssetCode.Length < AssetCode.Length)
+                    {
+                        // kiểm tra chừng nào chuỗi hiện tại mà nhỏ hơn chuỗi lấy về từ sql
+                        while (newAssetCode.Length < AssetCode.Length)
+                        {
+                            string[] newOutput = Regex.Matches(newAssetCode, "[0-9]+|[^0-9]+")
+                               .Cast<Match>()
+                               .Select(match => match.Value)
+                               .ToArray();
+                            // chuỗi kí tự
+                            valueAssetCode = newAssetCodeValue;
+                            // chuối số
+                            numberAssetCode = newOutput[newOutput.Length - 1];
+                            // chèn 0 vào giữa chuỗi kí tự với chuỗi số
+                            newAssetCode = valueAssetCode + "0" + numberAssetCode;
+                        }
+
+                    }
+                }
+                else newAssetCode = saveValue + 1;
             }
-            newAssetCode += currentMax;
             return newAssetCode;
         }
-
         public List<FixedAsset> getPaging(int pageIndex, int pageSize)
         {
             throw new NotImplementedException();
