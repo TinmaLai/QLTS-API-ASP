@@ -49,14 +49,15 @@ namespace MISA.QLTS.CORE.Services
                     ExcelWorksheet worksheet = package.Workbook.Worksheets[0];
                     var rowCount = worksheet.Dimension.Rows;
 
-                    for (int row = 1; row <= rowCount; row++)
+                    for (int row = 2; row <= rowCount; row++)
                     {
                         FixedAsset fixedAsset = new FixedAsset();
 
                         fixedAsset.FixedAssetCode = worksheet.Cells[row, 1].Value.ToString().Trim();
                         fixedAsset.FixedAssetName = worksheet.Cells[row, 2].Value.ToString().Trim();
-                        fixedAsset.DepreciationRate = int.Parse(worksheet.Cells[row, 3].Value.ToString().Trim());
+                        fixedAsset.DepreciationRate = float.Parse(worksheet.Cells[row, 3].Value.ToString().Trim());
                         fixedAsset.LifeTime = int.Parse(worksheet.Cells[row, 4].Value.ToString().Trim());
+
                         fixedAssets.Add(fixedAsset);
                     }
                 }

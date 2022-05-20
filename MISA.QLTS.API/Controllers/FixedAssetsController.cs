@@ -91,6 +91,11 @@ namespace MISA.QLTS.API.Controllers
             }
             else return StatusCode(500, res);
         }
+        /// <summary>
+        /// Thực hiện import dữ liệu vào từ file Excel
+        /// </summary>
+        /// <param name="formFile"></param>
+        /// <returns></returns>
         [HttpPost("import")]
         public IActionResult Import(IFormFile formFile)
         {
