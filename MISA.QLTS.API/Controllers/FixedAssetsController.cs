@@ -91,5 +91,18 @@ namespace MISA.QLTS.API.Controllers
             }
             else return StatusCode(500, res);
         }
+        [HttpPost("import")]
+        public IActionResult Import(IFormFile formFile)
+        {
+            try
+            {
+                var res = _fixedAssetService.Import(formFile);
+                return Ok(res);
+            }
+            catch(Exception ex)
+            {
+                return HandleException(ex);
+            }
+        }
     }
 }

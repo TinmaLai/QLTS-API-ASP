@@ -62,8 +62,9 @@ namespace MISA.QLTS.CORE.Services
                 // Lấy giá trị thêm vào
                 var propValue = prop.GetValue(entity);
                 // Kiểu dữ liệu của prop
+                var isPrimaryKey = prop.IsDefined(typeof(PrimaryKey), true);
                 var propType = prop.PropertyType;
-                if (propType == typeof(Guid))
+                if (isPrimaryKey == true)
                 {
                     propId = Guid.Parse(propValue.ToString());
                 }
@@ -127,6 +128,19 @@ namespace MISA.QLTS.CORE.Services
         public int Update(Guid id, T entity)
         {
             int mode = 0;
+            var properties = typeof(T).GetProperties();
+            foreach (var prop in properties)
+            {
+                // Kiểu dữ liệu của prop
+                var propType = prop.PropertyType;
+                var isPrimaryKey = prop.IsDefined(typeof(PrimaryKey), true);
+                if (isPrimaryKey == true)
+                {
+                    // Set id từ url vào id của entity 
+                    prop.SetValue(entity, id);
+                }
+
+            }
             // Thực hiện sửa dữ liệu
             var isValid = ValidateObject(entity, mode);
             if (isValid == true && (ValidateErrorMsgs == null || ValidateErrorMsgs.Count() == 0))

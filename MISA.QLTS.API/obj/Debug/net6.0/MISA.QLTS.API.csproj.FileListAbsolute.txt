@@ -35,3 +35,12 @@ F:\download\laptrinh\InternMisa\dotnet\MISA.Web03.NBTIN\MISA.QLTS.API\bin\Debug\
 F:\download\laptrinh\InternMisa\dotnet\MISA.Web03.NBTIN\MISA.QLTS.API\bin\Debug\net6.0\Microsoft.AspNetCore.Mvc.NewtonsoftJson.dll
 F:\download\laptrinh\InternMisa\dotnet\MISA.Web03.NBTIN\MISA.QLTS.API\bin\Debug\net6.0\Newtonsoft.Json.dll
 F:\download\laptrinh\InternMisa\dotnet\MISA.Web03.NBTIN\MISA.QLTS.API\bin\Debug\net6.0\Newtonsoft.Json.Bson.dll
+F:\download\laptrinh\InternMisa\dotnet\MISA.Web03.NBTIN\MISA.QLTS.API\bin\Debug\net6.0\EPPlus.dll
+F:\download\laptrinh\InternMisa\dotnet\MISA.Web03.NBTIN\MISA.QLTS.API\bin\Debug\net6.0\EPPlus.Interfaces.dll
+F:\download\laptrinh\InternMisa\dotnet\MISA.Web03.NBTIN\MISA.QLTS.API\bin\Debug\net6.0\EPPlus.System.Drawing.dll
+F:\download\laptrinh\InternMisa\dotnet\MISA.Web03.NBTIN\MISA.QLTS.API\bin\Debug\net6.0\Microsoft.IO.RecyclableMemoryStream.dll
+F:\download\laptrinh\InternMisa\dotnet\MISA.Web03.NBTIN\MISA.QLTS.API\bin\Debug\net6.0\Microsoft.Win32.SystemEvents.dll
+F:\download\laptrinh\InternMisa\dotnet\MISA.Web03.NBTIN\MISA.QLTS.API\bin\Debug\net6.0\System.Drawing.Common.dll
+F:\download\laptrinh\InternMisa\dotnet\MISA.Web03.NBTIN\MISA.QLTS.API\bin\Debug\net6.0\runtimes\win\lib\netcoreapp3.0\Microsoft.Win32.SystemEvents.dll
+F:\download\laptrinh\InternMisa\dotnet\MISA.Web03.NBTIN\MISA.QLTS.API\bin\Debug\net6.0\runtimes\unix\lib\netcoreapp3.0\System.Drawing.Common.dll
+F:\download\laptrinh\InternMisa\dotnet\MISA.Web03.NBTIN\MISA.QLTS.API\bin\Debug\net6.0\runtimes\win\lib\netcoreapp3.0\System.Drawing.Common.dll

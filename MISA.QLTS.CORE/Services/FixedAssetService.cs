@@ -1,7 +1,9 @@
-﻿using MISA.QLTS.CORE.Entities;
+﻿using Microsoft.AspNetCore.Http;
+using MISA.QLTS.CORE.Entities;
 using MISA.QLTS.CORE.Exceptions;
 using MISA.QLTS.CORE.Interfaces.Repositories;
 using MISA.QLTS.CORE.Interfaces.Services;
+using OfficeOpenXml;
 using System;
 using System.Collections.Generic;
 using System.Linq;
@@ -18,6 +20,63 @@ namespace MISA.QLTS.CORE.Services
             _fixedAssetRepository = fixedAssetRepository;
         }
         
+        public List<FixedAsset> Import(IFormFile formFile)
+        {
+            if (formFile == null || formFile.Length <= 0)
+            {
+                var errorService = new ErrorService();
+                errorService.UserMsg = Resources.ResourceVN.Error_Validate;
+                errorService.Data = ValidateErrorMsgs;
+                throw new MISAValidateException("Tệp trống", ValidateErrorMsgs);
+            }
+
+            if (!Path.GetExtension(formFile.FileName).Equals(".xlsx", StringComparison.OrdinalIgnoreCase))
+            {
+                var errorService = new ErrorService();
+                errorService.UserMsg = Resources.ResourceVN.Error_Validate;
+                errorService.Data = ValidateErrorMsgs;
+                throw new MISAValidateException("Không đúng định dạng", ValidateErrorMsgs);
+            }
+
+            var fixedAssets = new List<FixedAsset>();
+
+            using (var stream = new MemoryStream())
+            {
+               formFile.CopyToAsync(stream);
+
+                using (var package = new ExcelPackage(stream))
+                {
+                    ExcelWorksheet worksheet = package.Workbook.Worksheets[0];
+                    var rowCount = worksheet.Dimension.Rows;
+
+                    for (int row = 1; row <= rowCount; row++)
+                    {
+                        FixedAsset fixedAsset = new FixedAsset();
+
+                        fixedAsset.FixedAssetCode = worksheet.Cells[row, 1].Value.ToString().Trim();
+                        fixedAsset.FixedAssetName = worksheet.Cells[row, 2].Value.ToString().Trim();
+                        fixedAsset.DepreciationRate = int.Parse(worksheet.Cells[row, 3].Value.ToString().Trim());
+                        fixedAsset.LifeTime = int.Parse(worksheet.Cells[row, 4].Value.ToString().Trim());
+                        fixedAssets.Add(fixedAsset);
+                    }
+                }
+                //var fixedAssetImported = _fixedAssetRepository.Import(fixedAssets);
+                return fixedAssets;
+            }
+            
+        }
+        private string ProcessValueToString(object cellValue)
+        {
+            if (cellValue != null)
+            {
+                return cellValue.ToString();
+            }
+            else return null;
+        }
+        public DateTime? ProcessStringToDate(string dateTime)
+        {
+            return null;
+        }
         //public int Insert(FixedAsset fixedAsset)
         //{
 

@@ -53,61 +53,7 @@ namespace MISA.QLTS.Infrasructure.Repository
             }
             return false;
         }
-
-        //public int Delete(Guid fixedAssetId)
-        //{
-        //    var connectionString = "Host=3.0.89.182; Port=3306; Database=MISA.WEB03.NBTIN; User id=dev; Password=12345678";
-        //    //1. Khởi tạo kết nối với MariaDB
-        //    var sqlConnection = new MySqlConnection(connectionString);
-        //    var sqlCommand = $"DELETE FROM fixed_asset WHERE AssetId=@assetId";
-        //    var parameters = new DynamicParameters();
-        //    parameters.Add("@AssetId", fixedAssetId);
-        //    // Thực hiện truy vấn
-        //    var res = sqlConnection.Execute(sql: sqlCommand, param: parameters);
-        //    return res;
-        //}
-        //public FixedAsset GetById(Guid assetId)
-        //{
-        //    // Khởi tạo kết nối với database
-        //    var connectionString = "Host=3.0.89.182; Port=3306; Database=MISA.WEB03.NBTIN; User id=dev; Password=12345678";
-        //    //1. Khởi tạo kết nối với MariaDB
-        //    var sqlConnection = new MySqlConnection(connectionString);
-        //    //2. Lấy dữ liệu
-        //    //2.1. Câu lệnh truy vấn dữ liệu
-        //    var sqlCommand = $"SELECT * FROM fixed_asset WHERE AssetId = @FixedAssetId";
-        //    DynamicParameters parameters = new DynamicParameters();
-        //    parameters.Add("@FixedAssetId", assetId);
-        //    //2.2. Thực hiện lấy dữ liệu
-        //    var fixedAsset = sqlConnection.QueryFirstOrDefault<FixedAsset>(sql: sqlCommand, param: parameters);
-
-
-        //    //Trả kết quả cho client
-
-        //    return fixedAsset;
-        //}
-        //public string getNewCode()
-        //{
-
-        //    // Truy vấn ra danh sách các mã có tiền tố là TS
-        //    string sqlCommand = $"SELECT FixedAssetCode FROM FixedAsset WHERE FixedAssetCode IS NOT NULL AND FixedAssetCode LIKE '%TS%' ORDER BY  LENGTH(FixedAssetCode) DESC, FixedAssetCode DESC";
-        //    // Lấy bản ghi cuối cùng (giá trị gần nhất)
-        //    var FixedAssetCode = _sqlConnection.QueryFirstOrDefault<string>(sqlCommand);
-
-        //    int currentMax = 0;
-        //    int codeValue = int.Parse(FixedAssetCode.Substring(2).ToString());
-        //    if (currentMax < codeValue)
-        //    {
-        //        currentMax = codeValue;
-        //    }
-        //    currentMax = currentMax + 1;
-        //    string newAssetCode = "TS";
-        //    for (int i = 1; i < FixedAssetCode.Length - Math.Floor(Math.Log10(currentMax) + 2); i++)
-        //    {
-        //        newAssetCode += "0";
-        //    }
-        //    newAssetCode += currentMax;
-        //    return newAssetCode;
-        //}
+        
         public bool IsNumber(string pText)
         {
             Regex regex = new Regex(@"^[-+]?[0-9]*.?[0-9]+$");
@@ -195,6 +141,16 @@ namespace MISA.QLTS.Infrasructure.Repository
         }
         public List<FixedAsset> getPaging(int pageIndex, int pageSize)
         {
+            throw new NotImplementedException();
+        }
+
+        public IEnumerable<FixedAsset> Import(List<FixedAsset> fixedAssets)
+        {
+            foreach(var fixedAsset in fixedAssets)
+            {
+                Insert(fixedAsset);
+            }
+            return fixedAssets;
             throw new NotImplementedException();
         }
 
