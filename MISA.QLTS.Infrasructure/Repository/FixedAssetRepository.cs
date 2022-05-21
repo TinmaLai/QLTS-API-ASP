@@ -15,9 +15,13 @@ namespace MISA.QLTS.Infrasructure.Repository
     public class FixedAssetRepository : BaseRepository<FixedAsset>, IFixedAssetRepository
     {
         IConfiguration _configuration;
+        readonly string _connectionString = string.Empty;
+        protected MySqlConnection _sqlConnection;
         public FixedAssetRepository(IConfiguration configuration):base(configuration)
         {
             _configuration = configuration;
+            _connectionString = configuration.GetConnectionString("NBTIN");
+            _sqlConnection = new MySqlConnection(_connectionString);
         }
         /// <summary>
         /// Check mã trùng
@@ -28,8 +32,7 @@ namespace MISA.QLTS.Infrasructure.Repository
         /// <returns></returns>
         public bool CheckCodeDuplicate(Guid fixedAssetId, string fixedAssetCode, int mode)
         {
-            var connectionString = "Host=3.0.89.182; Port=3306; Database=MISA.WEB03.NBTIN; User id=dev; Password=12345678";
-            var sqlConnection = new MySqlConnection(connectionString);
+            
             var sqlCheck = "";
 
             if (mode == 1)
@@ -45,7 +48,7 @@ namespace MISA.QLTS.Infrasructure.Repository
             var parameters = new DynamicParameters();
             parameters.Add("@FixedAssetId", fixedAssetId);
             parameters.Add("@FixedAssetCode", fixedAssetCode);
-            var res = sqlConnection.QueryFirstOrDefault<object>(sqlCheck, parameters);
+            var res = _sqlConnection.QueryFirstOrDefault<object>(sqlCheck, parameters);
 
             if (res != null)
             {
@@ -59,6 +62,10 @@ namespace MISA.QLTS.Infrasructure.Repository
             Regex regex = new Regex(@"^[-+]?[0-9]*.?[0-9]+$");
             return regex.IsMatch(pText);
         }
+        /// <summary>
+        /// Thực hiện lấy mã mới
+        /// </summary>
+        /// <returns>Mã mới</returns>
         public string getNewCode()
         {
             // câu lệnh sql lấy mã tài sản theo ngày giảm dần;
@@ -144,84 +151,56 @@ namespace MISA.QLTS.Infrasructure.Repository
             throw new NotImplementedException();
         }
 
-        public IEnumerable<FixedAsset> Import(List<FixedAsset> fixedAssets)
+        public List<FixedAsset> Import(List<FixedAsset> fixedAssets)
         {
             foreach(var fixedAsset in fixedAssets)
             {
                 Insert(fixedAsset);
             }
             return fixedAssets;
-            throw new NotImplementedException();
+        }
+        /// <summary>
+        /// Xóa nhiều
+        /// </summary>
+        public int MultiDelete(Guid[] ids)
+        {
+            
+            var stringDelete = "";
+            foreach(var id in ids)
+            {
+                stringDelete += "'" + id + "',";
+            }
+            stringDelete = stringDelete.Remove(stringDelete.Length - 1,1);
+            var sqlCommand = $"DELETE FROM FixedAsset WHERE FixedAssetId IN ({stringDelete})";
+            var res = _sqlConnection.Execute(sqlCommand);
+            return res;
         }
 
-        //public int Insert(FixedAsset fixedAsset)
-        //{
-        //    fixedAsset.AssetId = Guid.NewGuid();
-        //    var connectionString = "Host=3.0.89.182; Port=3306; Database=MISA.WEB03.NBTIN; User id=dev; Password=12345678";
-        //    //1. Kết nối với MariaDB
-        //    var sqlConnection = new MySqlConnection(connectionString);
-        //    //2. Lấy dữ liệu
-        //    //2.1. Câu lệnh truy vấn dữ liệu
+        public List<FixedAsset> Filter(string? filterContent, string? departmentName, string? fixedAssetCategoryName, int? pageSize, int? pageNumber)
+        {
+            var parameters = new DynamicParameters();
+            parameters.Add("@FilterContent", filterContent);
+            parameters.Add("@DepartmentName", departmentName);
+            parameters.Add("@FixedAssetCategoryName", fixedAssetCategoryName);
+            var pageOffset = pageSize * (pageNumber - 1);
+            parameters.Add("@PageSize", pageSize);
+            parameters.Add("@PageOffset", pageOffset);
 
-        //    var sqlCommand = $"INSERT INTO fixed_asset (AssetID, AssetCode, AssetName, DepartmentId, DepartmentCode, DepartmentName, FixedAssetCategoryId, FixedAssetCategoryCode, FixedAssetCategoryName, PurchaseDate, Cost, Quantity, DepreciationRate, TrackedYear, LifeTime, ProductionYear) VALUES (@AssetID, @AssetCode, @AssetName, @DepartmentId, @DepartmentCode, @DepartmentName, @FixedAssetCategoryId, @FixedAssetCategoryCode, @FixedAssetCategoryName, @PurchaseDate, @Cost, @Quantity, @DepreciationRate, @TrackedYear, @LifeTime, @ProductionYear)";
+            var sqlCommand = $"SELECT * FROM FixedAsset";
+            if (filterContent != null) sqlCommand += $" WHERE (FixedAssetName LIKE CONCAT('%',@FilterContent,'%') " +
+                $"OR FixedAssetCode LIKE CONCAT('%',@FilterContent,'%')) AND";
+            else sqlCommand += " WHERE";
 
-        //    DynamicParameters parameters = new DynamicParameters();
-        //    parameters.Add("@AssetId", fixedAsset.AssetId);
-        //    parameters.Add("@AssetCode", fixedAsset.AssetCode);
-        //    parameters.Add("@AssetName", fixedAsset.AssetName);
-        //    parameters.Add("@DepartmentId", fixedAsset.DepartmentId);
-        //    parameters.Add("@DepartmentCode", fixedAsset.DepartmentCode);
-        //    parameters.Add("@DepartmentName", fixedAsset.DepartmentName);
-        //    parameters.Add("@FixedAssetCategoryId", fixedAsset.FixedAssetCategoryId);
-        //    parameters.Add("@FixedAssetCategoryCode", fixedAsset.FixedAssetCategoryCode);
-        //    parameters.Add("@FixedAssetCategoryName", fixedAsset.FixedAssetCategoryName);
-        //    parameters.Add("@PurchaseDate", fixedAsset.PurchaseDate);
-        //    parameters.Add("@Cost", fixedAsset.Cost);
-        //    parameters.Add("@Quantity", fixedAsset.Quantity);
-        //    parameters.Add("@DepreciationRate", fixedAsset.DepreciationRate);
-        //    parameters.Add("@TrackedYear", fixedAsset.TrackedYear);
-        //    parameters.Add("@LifeTime", fixedAsset.LifeTime);
-        //    parameters.Add("@ProductionYear", fixedAsset.ProductionYear);
+            if (departmentName != null) sqlCommand += $" DepartmentName = @DepartmentName AND";
+            else sqlCommand += $" 1 = 1 AND";
 
-        //    var res = sqlConnection.Execute(sql: sqlCommand, param: parameters);
-        //    return res;
+            if (fixedAssetCategoryName != null) sqlCommand += $" FixedAssetCategoryName = @FixedAssetCategoryName AND";
+            else sqlCommand += $" 1 = 1";
 
-        //}
+            sqlCommand += $" ORDER BY CreatedDate LIMIT @PageSize OFFSET @PageOffset";
 
-        //public int Update(Guid fixedAssetId, FixedAsset fixedAsset)
-        //{
-        //    var connectionString = "Host=3.0.89.182; Port=3306; Database=MISA.WEB03.NBTIN; User id=dev; Password=12345678";
-        //    //1. Kết nối với MariaDB
-        //    var sqlConnection = new MySqlConnection(connectionString);
-        //    //2. Lấy dữ liệu
-        //    //2.1. Câu lệnh truy vấn dữ liệu
-
-        //    var sqlCommand = $"UPDATE FixedAsset SET FixedAssetCode=@AssetCode, FixedAssetName=@AssetName, DepartmentCode=@DepartmentCode,DepartmentName=@DepartmentName" +
-        //            $",FixedAssetCategoryCode=@FixedAssetCategoryCode,FixedAssetCategoryName=@FixedAssetCategoryName" +
-        //            $",PurchaseDate=@PurchaseDate,Cost=@Cost,Quantity=@Quantity,DepreciationRate=@DepreciationRate,TrackedYear=@TrackedYear" +
-        //            $",LifeTime=@LifeTime,ProductionYear=@ProductionYear WHERE FixedAssetId=@AssetId";
-
-        //    DynamicParameters parameters = new DynamicParameters();
-        //    parameters.Add("@AssetId", fixedAssetId);
-        //    parameters.Add("@AssetCode", fixedAsset.FixedAssetCode);
-        //    parameters.Add("@AssetName", fixedAsset.FixedAssetName);
-        //    parameters.Add("@DepartmentId", fixedAsset.DepartmentId);
-        //    parameters.Add("@DepartmentCode", fixedAsset.DepartmentCode);
-        //    parameters.Add("@DepartmentName", fixedAsset.DepartmentName);
-        //    parameters.Add("@FixedAssetCategoryId", fixedAsset.FixedAssetCategoryId);
-        //    parameters.Add("@FixedAssetCategoryCode", fixedAsset.FixedAssetCategoryCode);
-        //    parameters.Add("@FixedAssetCategoryName", fixedAsset.FixedAssetCategoryName);
-        //    parameters.Add("@PurchaseDate", fixedAsset.PurchaseDate);
-        //    parameters.Add("@Cost", fixedAsset.Cost);
-        //    parameters.Add("@Quantity", fixedAsset.Quantity);
-        //    parameters.Add("@DepreciationRate", fixedAsset.DepreciationRate);
-        //    parameters.Add("@TrackedYear", fixedAsset.TrackedYear);
-        //    parameters.Add("@LifeTime", fixedAsset.LifeTime);
-        //    parameters.Add("@ProductionYear", fixedAsset.ProductionYear);
-
-        //    var res = sqlConnection.Execute(sql: sqlCommand, param: parameters);
-        //    return res;
-        //}
-
+            var fixedAssets = _sqlConnection.Query<FixedAsset>(sqlCommand,parameters);
+            return fixedAssets.ToList();
+        }
     }
 }

@@ -47,7 +47,7 @@ namespace MISA.QLTS.CORE.Services
         /// <param name="mode">Trạng thái khi validate (thêm/sửa)</param>
         /// <returns></returns>
         /// CreatedBy: NBTIN(18/05/2022)
-        private bool ValidateObject(T entity, int mode)
+        protected bool ValidateObject(T entity, int mode)
         {
             var isValid = true;
             var propId = Guid.NewGuid();
@@ -92,6 +92,7 @@ namespace MISA.QLTS.CORE.Services
                     isValid = false;
                     ValidateErrorMsgs.Add($"Thông tin {propFriendlyName} không được phép để trống");
                 }
+                // 2. Các thông tin là chuỗi có yêu cầu giới hạn về độ dài (Mã tài sản không vượt quá 100 kí tự)
                 var isMaxLength = prop.IsDefined(typeof(MaxLength), true);
                 if (isMaxLength)
                 {
@@ -103,15 +104,6 @@ namespace MISA.QLTS.CORE.Services
                         ValidateErrorMsgs.Add(string.Format(Resources.ResourceVN.ErrorValidate_PropertyMaxLength, propFriendlyName, maxLength));
                     }
                 }
-                
-                
-                //if (isPrimaryKey == true && propType == typeof(Guid))
-                //{
-                //    prop.SetValue(entity, Guid.NewGuid());
-                //}
-                // 2. Các thông tin là chuỗi có yêu cầu giới hạn về độ dài (Mã tài sản không vượt quá 100 kí tự)
-
-                // 3. Ngày tháng không vượt qua ngày hiện tại
 
             }
             return isValid;
@@ -139,7 +131,6 @@ namespace MISA.QLTS.CORE.Services
                     // Set id từ url vào id của entity 
                     prop.SetValue(entity, id);
                 }
-
             }
             // Thực hiện sửa dữ liệu
             var isValid = ValidateObject(entity, mode);

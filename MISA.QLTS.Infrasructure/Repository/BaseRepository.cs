@@ -112,7 +112,11 @@ namespace MISA.QLTS.Infrasructure.Repository
                 parameter.Add($"@{propName}", $"{propValue}");
                 // Kiểu dữ liệu của prop
                 var propType = prop.PropertyType;
-                
+                var isNotInsert = prop.IsDefined(typeof(NotInsertColumn), true);
+                if (isNotInsert)
+                {
+                    continue;
+                }
                 var isPrimaryKey = prop.IsDefined(typeof(PrimaryKey), true);
                 if(isPrimaryKey == true && propType == typeof(Guid))
                 {
@@ -165,5 +169,6 @@ namespace MISA.QLTS.Infrasructure.Repository
             var rowBeAffects = _sqlConnection.Execute(sqlCommand, param: entity);
             return rowBeAffects;
         }
+
     }
 }

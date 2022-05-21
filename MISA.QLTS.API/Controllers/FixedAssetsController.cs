@@ -109,5 +109,36 @@ namespace MISA.QLTS.API.Controllers
                 return HandleException(ex);
             }
         }
+        /// <summary>
+        /// Xóa nhiều bản ghi
+        /// </summary>
+        /// <param name="ids"></param>
+        /// <returns></returns>
+        [HttpDelete("multiDelete")]
+        public IActionResult MultiDelete(Guid[] ids)
+        {
+            try
+            {
+                var res = _fixedAssetRepository.MultiDelete(ids);
+                return Ok(res);
+            }
+            catch(Exception ex)
+            {
+                return HandleException(ex);
+            }
+        }
+        [HttpGet("filter")]
+        public IActionResult GetPaging(string? searchContent, string? departmentName, string? fixedAssetCategoryName, int? pageSize = 10, int? pageNumber = 1)
+        {
+            try
+            {
+                var fixedAssets = _fixedAssetRepository.Filter(searchContent, departmentName, fixedAssetCategoryName, pageSize, pageNumber);
+                return Ok(fixedAssets);
+            }
+            catch (Exception ex)
+            {
+                return HandleException(ex);
+            }
+        }
     }
 }

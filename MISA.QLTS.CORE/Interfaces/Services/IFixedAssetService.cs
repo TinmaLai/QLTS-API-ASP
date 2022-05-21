@@ -1,4 +1,5 @@
-﻿using MISA.QLTS.CORE.Entities;
+﻿using Microsoft.AspNetCore.Http;
+using MISA.QLTS.CORE.Entities;
 using System;
 using System.Collections.Generic;
 using System.Linq;
@@ -15,7 +16,7 @@ namespace MISA.QLTS.CORE.Interfaces.Services
         /// <param name="file">Tệp chứa hông tin tài sản</param>
         /// <returns>Danh sách nhân viên kèm theo trạng thái chi tiết kết quả import</returns>
         /// CreatedBy: NBTIN (20/05/2022)
-        List<FixedAsset> Import(Microsoft.AspNetCore.Http.IFormFile file)
+        List<FixedAsset> Import(IFormFile file)
         {
             List<FixedAsset> list = new List<FixedAsset>();
             return list;

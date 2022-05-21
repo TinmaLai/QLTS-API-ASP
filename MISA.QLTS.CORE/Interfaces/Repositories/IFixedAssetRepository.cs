@@ -15,6 +15,14 @@ namespace MISA.QLTS.CORE.Interfaces.Repositories
         /// <param name="fixedAssets">Danh sách nhân viên hợp lệ</param>
         /// <returns>Trả về danh sách đã thêm đc/returns>
         /// CreatedBy: NBTIN(20/05/2022)
-       IEnumerable<FixedAsset> Import(List<FixedAsset> fixedAssets);
+        List<FixedAsset> Import(List<FixedAsset> fixedAssets);
+        /// <summary>
+        /// Thực hiện xóa nhiều bản ghi
+        /// </summary>
+        /// <param name="ids"></param>
+        /// <returns></returns>
+        int MultiDelete(Guid[] ids);
+        List<FixedAsset> Filter(string? filterContent, string? departmentName, string? fixedAssetCategoryName, int? pageSize, int? pageNumber);
+
     }
 }

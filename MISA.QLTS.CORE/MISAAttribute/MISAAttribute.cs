@@ -40,4 +40,10 @@ namespace MISA.QLTS.CORE.MISAAttribute
     {
 
     }
+    [AttributeUsage(AttributeTargets.Property | AttributeTargets.Field | AttributeTargets.Method)]
+    public class NotInsertColumn : Attribute
+    { 
+
+    }
+    
 }

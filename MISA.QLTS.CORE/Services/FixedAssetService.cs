@@ -8,6 +8,7 @@ using System;
 using System.Collections.Generic;
 using System.Linq;
 using System.Text;
+using System.Text.RegularExpressions;
 using System.Threading.Tasks;
 
 namespace MISA.QLTS.CORE.Services
@@ -55,14 +56,35 @@ namespace MISA.QLTS.CORE.Services
 
                         fixedAsset.FixedAssetCode = worksheet.Cells[row, 1].Value.ToString().Trim();
                         fixedAsset.FixedAssetName = worksheet.Cells[row, 2].Value.ToString().Trim();
-                        fixedAsset.DepreciationRate = float.Parse(worksheet.Cells[row, 3].Value.ToString().Trim());
-                        fixedAsset.LifeTime = int.Parse(worksheet.Cells[row, 4].Value.ToString().Trim());
+                        fixedAsset.FixedAssetCategoryCode = worksheet.Cells[row, 3].Value.ToString().Trim();
+                        fixedAsset.FixedAssetCategoryName = worksheet.Cells[row, 4].Value.ToString().Trim();
+                        fixedAsset.DepartmentCode = worksheet.Cells[row, 5].Value.ToString().Trim();
+                        fixedAsset.DepartmentName = worksheet.Cells[row, 6].Value.ToString().Trim();
 
-                        fixedAssets.Add(fixedAsset);
+                        fixedAsset.DepreciationRate = float.Parse(worksheet.Cells[row, 7].Value.ToString().Trim());
+                        fixedAsset.LifeTime = int.Parse(worksheet.Cells[row, 8].Value.ToString().Trim());
+                        fixedAsset.TrackedYear = int.Parse(worksheet.Cells[row, 9].Value.ToString().Trim());
+                        var purchaseDateValue = worksheet.Cells[row, 10].Value;
+                        var purchaseDate = ProcessStringToDate(purchaseDateValue);
+                        fixedAsset.PurchaseDate = (DateTime)purchaseDate;
+                        var productionYearValue = worksheet.Cells[row, 11].Value;
+                        var productionYear = ProcessStringToDate(productionYearValue);
+                        fixedAsset.ProductionYear = (DateTime)productionYear;
+
+                        // Thực hiện validate dữ liệu
+                        base.ValidateObject(fixedAsset,1);
+                        if(ValidateErrorMsgs.Count() > 0)
+                        {
+                            fixedAsset.IsValid = false;
+                        }
+                        if(fixedAsset.IsValid == true)
+                        {
+                            fixedAssets.Add(fixedAsset);
+                        }
                     }
                 }
-                //var fixedAssetImported = _fixedAssetRepository.Import(fixedAssets);
-                return fixedAssets;
+                var fixedAssetImported = _fixedAssetRepository.Import(fixedAssets);
+                return fixedAssetImported;
             }
             
         }
@@ -74,170 +96,30 @@ namespace MISA.QLTS.CORE.Services
             }
             else return null;
         }
-        public DateTime? ProcessStringToDate(string dateTime)
+        protected virtual DateTime? ProcessStringToDate(object cellValue)
         {
-            return null;
+            DateTime? dateReturn = null;
+            if(cellValue == null)
+            {
+                return null;
+            }
+            if (cellValue.GetType() == typeof(double))
+                return DateTime.FromOADate((double)cellValue);
+            var dateString = cellValue.ToString();
+            // Ngày tháng phải nhập đúng định dạng 
+            Regex dateValidRegex = new Regex(@"^([0]?[1-9]|[1|2][0-9]|[3][0|1])[./-]([0]?[1-9]|[1][0-2])[./-]([0-9]{4}|[0-9]{2})$");
+            if (dateValidRegex.IsMatch(dateString))
+            {
+                var dateSplit = dateString.Split(new String[] { "/", ".", "-" }, StringSplitOptions.None);
+                var day = int.Parse(dateSplit[0]);
+                var month = int.Parse(dateSplit[1]);
+                var year = int.Parse(dateSplit[2]);
+                dateReturn = new DateTime(year, month, day);
+            } else if(DateTime.TryParse(cellValue.ToString(), out DateTime dateTime) == true)
+            {
+                dateReturn = dateTime;
+            }
+            return dateReturn;
         }
-        //public int Insert(FixedAsset fixedAsset)
-        //{
-
-        //    var error = new ErrorService();
-        //    var errorData = new List<string>();
-        //    //1. Valiate dữ liệu: 
-        //    //1.1 Thông tin mã loại tài sản bắt buộc nhập: 
-        //    if (string.IsNullOrEmpty(fixedAsset.AssetCode))
-        //    {
-        //        errorData.Add(Resources.ResourceVN.AssetCodeValidate);
-
-        //    }
-        //    //1.2 Thông tin tên loại tài sản bắt buộc nhập:
-        //    if (string.IsNullOrEmpty(fixedAsset.AssetName))
-        //    {
-        //        errorData.Add(Resources.ResourceVN.AssetNameValidate);
-
-        //    }
-        //    //1.3 Thông tin mã bộ phận sử dụng bắt buộc nhập: 
-        //    if (string.IsNullOrEmpty(fixedAsset.DepartmentCode))
-        //    {
-        //        errorData.Add(Resources.ResourceVN.DepartmentCodeValidate);
-
-        //    }
-        //    //1.4 Thông tin tên bộ phận sử dụng bắt buộc nhập: 
-        //    if (string.IsNullOrEmpty(fixedAsset.DepartmentName))
-        //    {
-        //        errorData.Add(Resources.ResourceVN.DepartmentNameValidate);
-
-        //    }
-        //    //1.5 Thông tin mã loại tài sản bắt buộc nhập: 
-        //    if (string.IsNullOrEmpty(fixedAsset.FixedAssetCategoryCode))
-        //    {
-        //        errorData.Add(Resources.ResourceVN.CategoryCodeValidate);
-
-        //    }
-        //    //1.6 Thông tin tên loại tài sản bắt buộc nhập: 
-        //    if (string.IsNullOrEmpty(fixedAsset.FixedAssetCategoryName))
-        //    {
-        //        errorData.Add(Resources.ResourceVN.CategoryNameValidate);
-
-        //    }
-        //    //1.7 Thông tin nguyên giá bắt buộc lớn hơn 0   
-        //    if (fixedAsset.Cost <= 0)
-        //    {
-        //        errorData.Add(Resources.ResourceVN.CostValidate);
-
-        //    }
-        //    //1.8 Thông tin số lượng bắt buộc lớn hơn 0: 
-        //    if (fixedAsset.Quantity <= 0)
-        //    {
-        //        errorData.Add(Resources.ResourceVN.QuantityValidate);
-
-        //    }
-        //    //1.8 Thông tin tỷ lệ hao mòn bắt buộc lớn hơn 0: 
-        //    if (fixedAsset.DepreciationRate <= 0)
-        //    {
-        //        errorData.Add(Resources.ResourceVN.DepreciationRateValidate);
-
-        //    }
-        //    //1.9 Thông tin năm theo dõi bắt buộc lớn hơn 0: 
-        //    if (fixedAsset.TrackedYear <= 0 || fixedAsset.TrackedYear > 2022)
-        //    {
-        //        errorData.Add(Resources.ResourceVN.TrackedYearValidate);
-        //    }
-        //    if (_fixedAssetRepository.CheckCodeDuplicate(fixedAsset.AssetId, fixedAsset.AssetCode, 1))
-        //    {
-        //        errorData.Add(Resources.ResourceVN.AssetCodeDuplicateValidate);
-        //    }
-        //    if (errorData.Count > 0)
-        //    {
-        //        error.UserMsg = Resources.ResourceVN.Error_Validate;
-        //        error.Data = errorData;
-        //        throw new MISAValidateException("Dữ liệu đầu vào không hợp lệ", errorData);
-        //        //throw new Exception("tuann ga");
-        //    }
-
-        //    var res = _fixedAssetRepository.Insert(fixedAsset);
-        //    return res;
-
-        //}
-
-        //public int Update(Guid assetId, FixedAsset fixedAsset)
-        //{
-        //    var error = new ErrorService();
-        //    var errorData = new List<string>();
-        //    //1. Valiate dữ liệu: 
-        //    //1.1 Thông tin mã loại tài sản bắt buộc nhập: 
-        //    if (string.IsNullOrEmpty(fixedAsset.FixedAssetCode))
-        //    {
-        //        errorData.Add(Resources.ResourceVN.AssetCodeValidate);
-
-        //    }
-        //    //1.2 Thông tin tên loại tài sản bắt buộc nhập:
-        //    if (string.IsNullOrEmpty(fixedAsset.FixedAssetName))
-        //    {
-        //        errorData.Add(Resources.ResourceVN.AssetNameValidate);
-
-        //    }
-        //    //1.3 Thông tin mã bộ phận sử dụng bắt buộc nhập: 
-        //    if (string.IsNullOrEmpty(fixedAsset.DepartmentCode))
-        //    {
-        //        errorData.Add(Resources.ResourceVN.DepartmentCodeValidate);
-
-        //    }
-        //    //1.4 Thông tin tên bộ phận sử dụng bắt buộc nhập: 
-        //    if (string.IsNullOrEmpty(fixedAsset.DepartmentName))
-        //    {
-        //        errorData.Add(Resources.ResourceVN.DepartmentNameValidate);
-
-        //    }
-        //    //1.5 Thông tin mã loại tài sản bắt buộc nhập: 
-        //    if (string.IsNullOrEmpty(fixedAsset.FixedAssetCategoryCode))
-        //    {
-        //        errorData.Add(Resources.ResourceVN.CategoryCodeValidate);
-
-        //    }
-        //    //1.6 Thông tin tên loại tài sản bắt buộc nhập: 
-        //    if (string.IsNullOrEmpty(fixedAsset.FixedAssetCategoryName))
-        //    {
-        //        errorData.Add(Resources.ResourceVN.CategoryNameValidate);
-
-        //    }
-        //    //1.7 Thông tin nguyên giá bắt buộc lớn hơn 0   
-        //    if (fixedAsset.Cost <= 0)
-        //    {
-        //        errorData.Add(Resources.ResourceVN.CostValidate);
-
-        //    }
-        //    //1.8 Thông tin số lượng bắt buộc lớn hơn 0: 
-        //    if (fixedAsset.Quantity <= 0)
-        //    {
-        //        errorData.Add(Resources.ResourceVN.QuantityValidate);
-
-        //    }
-        //    //1.8 Thông tin tỷ lệ hao mòn bắt buộc lớn hơn 0: 
-        //    if (fixedAsset.DepreciationRate <= 0)
-        //    {
-        //        errorData.Add(Resources.ResourceVN.DepreciationRateValidate);
-
-        //    }
-        //    //1.9 Thông tin năm theo dõi bắt buộc lớn hơn 0: 
-        //    if (fixedAsset.TrackedYear <= 0 || fixedAsset.TrackedYear > 2022)
-        //    {
-        //        errorData.Add(Resources.ResourceVN.TrackedYearValidate);
-        //    }
-        //    if (_fixedAssetRepository.CheckCodeDuplicate(assetId, fixedAsset.FixedAssetCode, 0))
-        //    {
-        //        errorData.Add(Resources.ResourceVN.AssetCodeDuplicateValidate);
-        //    }
-        //    if (errorData.Count > 0)
-        //    {
-        //        error.UserMsg = Resources.ResourceVN.Error_Validate;
-        //        error.Data = errorData;
-        //        throw new MISAValidateException("Dữ liệu đầu vào không hợp lệ", errorData);
-        //        //throw new Exception("tuann ga");
-        //    }
-
-        //    var res = _fixedAssetRepository.Update(assetId, fixedAsset);
-        //    return res;
-        //}
     }
 }

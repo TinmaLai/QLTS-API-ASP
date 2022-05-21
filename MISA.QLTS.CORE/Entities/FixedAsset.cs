@@ -116,6 +116,8 @@ namespace MISA.QLTS.CORE.Entities
         [IsNotNullOrEmpty]
         [PropertyNameFriendly("Giá trị hao mòn năm")]
         public Decimal DepreciationPerYear { get; set; }
+        [NotInsertColumn]
+        public bool IsValid { get; set; } = true;
     }
 
 }
