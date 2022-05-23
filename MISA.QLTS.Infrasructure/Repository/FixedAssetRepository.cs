@@ -194,10 +194,10 @@ namespace MISA.QLTS.Infrasructure.Repository
             if (departmentName != null) sqlCommand += $" DepartmentName = @DepartmentName AND";
             else sqlCommand += $" 1 = 1 AND";
 
-            if (fixedAssetCategoryName != null) sqlCommand += $" FixedAssetCategoryName = @FixedAssetCategoryName AND";
+            if (fixedAssetCategoryName != null) sqlCommand += $" FixedAssetCategoryName = @FixedAssetCategoryName";
             else sqlCommand += $" 1 = 1";
 
-            sqlCommand += $" ORDER BY CreatedDate LIMIT @PageSize OFFSET @PageOffset";
+            sqlCommand += $" ORDER BY CreatedDate DESC LIMIT @PageSize OFFSET @PageOffset";
 
             var fixedAssets = _sqlConnection.Query<FixedAsset>(sqlCommand,parameters);
             return fixedAssets.ToList();

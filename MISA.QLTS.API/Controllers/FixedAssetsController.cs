@@ -128,7 +128,7 @@ namespace MISA.QLTS.API.Controllers
             }
         }
         [HttpGet("filter")]
-        public IActionResult GetPaging(string? searchContent, string? departmentName, string? fixedAssetCategoryName, int? pageSize = 10, int? pageNumber = 1)
+        public IActionResult GetPaging(string? searchContent, string? departmentName, string? fixedAssetCategoryName, int? pageSize = 15, int? pageNumber = 1)
         {
             try
             {

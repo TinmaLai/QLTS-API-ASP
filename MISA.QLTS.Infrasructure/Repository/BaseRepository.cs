@@ -68,7 +68,7 @@ namespace MISA.QLTS.Infrasructure.Repository
         public List<T> Get()
         {
             // Khai báo câu truy vấn
-            var sqlCommand = $"SELECT * FROM {_tableName} ORDER BY {_tableName}Code";
+            var sqlCommand = $"SELECT * FROM {_tableName}";
             var entities = _sqlConnection.Query<T>(sqlCommand);
             return entities.ToList();
         }
@@ -149,6 +149,11 @@ namespace MISA.QLTS.Infrasructure.Repository
 
                 var isPrimaryKey = prop.IsDefined(typeof(PrimaryKey), true);
                 if (isPrimaryKey == true)
+                {
+                    continue;
+                }
+                var isNotInsertColumn = prop.IsDefined(typeof(NotInsertColumn), true);
+                if(isNotInsertColumn == true)
                 {
                     continue;
                 }
