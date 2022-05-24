@@ -24,7 +24,7 @@ namespace MISA.QLTS.CORE.Services
         {
             int mode = 1;
             // Thực hiện thêm mới dữ liệu
-            //TODO: ANH QUYEN GA
+            // Thực hiện validate trước khi thêm
             var isValid = ValidateObject(entity, mode);
             if (isValid == true && (ValidateErrorMsgs == null || ValidateErrorMsgs.Count() == 0))
             {
@@ -32,6 +32,7 @@ namespace MISA.QLTS.CORE.Services
                 
             } else
             {
+                // Xử lý lỗi khi Validate có lỗi xảy ra
                 var errorService = new ErrorService();
                 errorService.UserMsg = Resources.ResourceVN.Error_Validate;
                 errorService.Data = ValidateErrorMsgs;
@@ -45,12 +46,13 @@ namespace MISA.QLTS.CORE.Services
         /// </summary>
         /// <param name="entity">Đối tượng cần validate</param>
         /// <param name="mode">Trạng thái khi validate (thêm/sửa)</param>
-        /// <returns></returns>
+        /// <returns>true: Không có lỗi validate, false: Có lỗi validate</returns>
         /// CreatedBy: NBTIN(18/05/2022)
         protected bool ValidateObject(T entity, int mode)
         {
             var isValid = true;
             var propId = Guid.NewGuid();
+            // Lấy toàn bộ thuộc tính của đối tượng
             var properties = typeof(T).GetProperties();
             foreach (var prop in properties)
             {
@@ -58,14 +60,17 @@ namespace MISA.QLTS.CORE.Services
                 
                 // Lấy tên của prop
                 var propName = prop.Name;
+                // Lấy tên gọi được của prop (VD: Tên tài sản, Mã tài sản, ...)
                 var propFriendlyName = propName;
                 // Lấy giá trị thêm vào
                 var propValue = prop.GetValue(entity);
-                // Kiểu dữ liệu của prop
+                // kiểm tra prop có phải khóa chính không
                 var isPrimaryKey = prop.IsDefined(typeof(PrimaryKey), true);
+                // Kiểu dữ liệu của prop
                 var propType = prop.PropertyType;
                 if (isPrimaryKey == true)
                 {
+                    // Nếu là khóa chính, lấy ra propId
                     propId = Guid.Parse(propValue.ToString());
                 }
                 // Kiểm tra xem prop hiện tại có gán attribute PropertyFriendlyName không
@@ -75,8 +80,14 @@ namespace MISA.QLTS.CORE.Services
                     propFriendlyName = (prop.GetCustomAttributes(typeof(PropertyNameFriendly),true)[0] as PropertyNameFriendly).Name;
                 }
                 // 1. Thông tin bắt buộc nhập:
-                var isNotDuplicate = prop.IsDefined(typeof(NotDuplicate), true);
                 var isNotNullOrEmpty = prop.IsDefined(typeof(IsNotNullOrEmpty), true);
+                if(isNotNullOrEmpty == true && (propValue == null || propValue.ToString() == ""))
+                {
+                    isValid = false;
+                    ValidateErrorMsgs.Add($"Thông tin {propFriendlyName} không được phép để trống");
+                }
+                // 2. Thông tin không được phép trùng
+                var isNotDuplicate = prop.IsDefined(typeof(NotDuplicate), true);
                 if (isNotDuplicate == true)
                 {
                     var isDup = _baseRepository.CheckCodeDuplicate(propId, propValue.ToString(), mode);
@@ -87,17 +98,13 @@ namespace MISA.QLTS.CORE.Services
                     }
                     else isValid = true;
                 }
-                if(isNotNullOrEmpty == true && (propValue == null || propValue.ToString() == ""))
-                {
-                    isValid = false;
-                    ValidateErrorMsgs.Add($"Thông tin {propFriendlyName} không được phép để trống");
-                }
-                // 2. Các thông tin là chuỗi có yêu cầu giới hạn về độ dài (Mã tài sản không vượt quá 100 kí tự)
+                // 3. Các thông tin là chuỗi có yêu cầu giới hạn về độ dài (Mã tài sản không vượt quá 100 kí tự)
                 var isMaxLength = prop.IsDefined(typeof(MaxLength), true);
                 if (isMaxLength)
                 {
                     // Lấy ra maxLength
                     var maxLength = (prop.GetCustomAttributes(typeof(MaxLength), true)[0] as MaxLength).Length;
+                    // Kiểm tra xem độ dài của value có lớn hơn giá trị maxLength không
                     if (propValue.ToString().Length > maxLength)
                     {
                         isValid = false;
@@ -117,9 +124,17 @@ namespace MISA.QLTS.CORE.Services
         {
             return null;
         }
+        /// <summary>
+        /// Thực hiện sửa bản ghi theo id truyền vào và object nhận được
+        /// </summary>
+        /// <param name="id">Id bản ghi muốn sửa</param>
+        /// <param name="entity">Đối tượng muốn sửa thành</param>
+        /// <returns></returns>
+        /// <exception cref="MISAValidateException"></exception>
         public int Update(Guid id, T entity)
         {
             int mode = 0;
+            // Lấy toàn bộ thuộc tính của đối tượng
             var properties = typeof(T).GetProperties();
             foreach (var prop in properties)
             {

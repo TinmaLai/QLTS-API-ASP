@@ -19,6 +19,10 @@ namespace MISA.QLTS.API.Controllers
             _fixedAssetRepository = fixedAssetRepository;
             _fixedAssetService = fixedAssetService;
         }
+        /// <summary>
+        /// Lấy mã mới
+        /// </summary>
+        /// <returns></returns>
         [HttpGet("NewAssetCode")]
         public IActionResult GetNewCode()
         {
@@ -94,7 +98,7 @@ namespace MISA.QLTS.API.Controllers
         /// <summary>
         /// Thực hiện import dữ liệu vào từ file Excel
         /// </summary>
-        /// <param name="formFile"></param>
+        /// <param name="formFile">File import</param>
         /// <returns></returns>
         [HttpPost("import")]
         public IActionResult Import(IFormFile formFile)
@@ -112,7 +116,7 @@ namespace MISA.QLTS.API.Controllers
         /// <summary>
         /// Xóa nhiều bản ghi
         /// </summary>
-        /// <param name="ids"></param>
+        /// <param name="ids">Mảng id được xóa</param>
         /// <returns></returns>
         [HttpDelete("multiDelete")]
         public IActionResult MultiDelete(Guid[] ids)
@@ -127,6 +131,15 @@ namespace MISA.QLTS.API.Controllers
                 return HandleException(ex);
             }
         }
+        /// <summary>
+        /// Hàm gọi vào repository để filter
+        /// </summary>
+        /// <param name="searchContent">Chuỗi tìm kiếm</param>
+        /// <param name="departmentName">Tên bộ phận sử dụng</param>
+        /// <param name="fixedAssetCategoryName">Tên loại tài sản</param>
+        /// <param name="pageSize">Số bản ghi trong một trang</param>
+        /// <param name="pageNumber">Trang số mấy</param>
+        /// <returns></returns>
         [HttpGet("filter")]
         public IActionResult GetPaging(string? searchContent, string? departmentName, string? fixedAssetCategoryName, int? pageSize = 15, int? pageNumber = 1)
         {

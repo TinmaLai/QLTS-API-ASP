@@ -168,8 +168,14 @@
   <data name="LifeTimeValidate" xml:space="preserve">
     <value />
   </data>
+  <data name="NoMatchFormatFile" xml:space="preserve">
+    <value>Không đúng định dạng</value>
+  </data>
   <data name="NotValidId" xml:space="preserve">
     <value>Không tìm thấy id này</value>
+  </data>
+  <data name="NullFile" xml:space="preserve">
+    <value>Tệp trống</value>
   </data>
   <data name="ProductionYearValidate" xml:space="preserve">
     <value>Ngày bắt đầu sử dụng không được lớn hơn ngày hiện tại</value>

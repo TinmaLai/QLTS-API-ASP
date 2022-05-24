@@ -30,33 +30,37 @@ namespace MISA.QLTS.Infrasructure.Repository
         /// <param name="fixedAssetCode">Code tài sản</param>
         /// <param name="mode">Thêm = 0, sửa = 1</param>
         /// <returns></returns>
-        public bool CheckCodeDuplicate(Guid fixedAssetId, string fixedAssetCode, int mode)
-        {
-            
-            var sqlCheck = "";
+        //public bool CheckCodeDuplicate(Guid fixedAssetId, string fixedAssetCode, int mode)
+        //{
 
-            if (mode == 1)
-            {
-                sqlCheck = $"SELECT * FROM FixedAsset WHERE FixedAssetCode = @FixedAssetCode";
+        //    var sqlCheck = "";
 
-            }
-            else if (mode == 0)
-            {
-                sqlCheck = $"SELECT * FROM FixedAsset WHERE FixedAssetCode = @FixedAssetCode AND FixedAssetId <> @FixedAssetId";
-            }
+        //    if (mode == 1)
+        //    {
+        //        sqlCheck = $"SELECT * FROM FixedAsset WHERE FixedAssetCode = @FixedAssetCode";
 
-            var parameters = new DynamicParameters();
-            parameters.Add("@FixedAssetId", fixedAssetId);
-            parameters.Add("@FixedAssetCode", fixedAssetCode);
-            var res = _sqlConnection.QueryFirstOrDefault<object>(sqlCheck, parameters);
+        //    }
+        //    else if (mode == 0)
+        //    {
+        //        sqlCheck = $"SELECT * FROM FixedAsset WHERE FixedAssetCode = @FixedAssetCode AND FixedAssetId <> @FixedAssetId";
+        //    }
 
-            if (res != null)
-            {
-                return true;
-            }
-            return false;
-        }
-        
+        //    var parameters = new DynamicParameters();
+        //    parameters.Add("@FixedAssetId", fixedAssetId);
+        //    parameters.Add("@FixedAssetCode", fixedAssetCode);
+        //    var res = _sqlConnection.QueryFirstOrDefault<object>(sqlCheck, parameters);
+
+        //    if (res != null)
+        //    {
+        //        return true;
+        //    }
+        //    return false;
+        //}
+        /// <summary>
+        /// Hàm check xem chuỗi truyền vào có phải dạng số hay không
+        /// </summary>
+        /// <param name="pText"></param>
+        /// <returns></returns>
         public bool IsNumber(string pText)
         {
             Regex regex = new Regex(@"^[-+]?[0-9]*.?[0-9]+$");
@@ -73,8 +77,13 @@ namespace MISA.QLTS.Infrasructure.Repository
 
             // Lấy mã tài sản gần nhất
             var AssetCode = _sqlConnection.QueryFirstOrDefault<string>(sql: sqlCommand);
+            // Nếu chưa có bản ghi nào thì khởi tạo assetcode = 0001
+            if (String.IsNullOrEmpty(AssetCode))
+            {
+                return "TS0001";
+            }
 
-            // trả về mảng chuỗi và số riêng biệt.
+            // trả về mảng gồm chuỗi và số riêng biệt.
             string[] output = Regex.Matches(AssetCode, "[0-9]+|[^0-9]+")
             .Cast<Match>()
             .Select(match => match.Value)
@@ -125,7 +134,7 @@ namespace MISA.QLTS.Infrasructure.Repository
                     // Nếu chuỗi hiện tại mà nhỏ hơn chuỗi lấy về từ sql
                     if (newAssetCode.Length < AssetCode.Length)
                     {
-                        // kiểm tra chừng nào chuỗi hiện tại mà nhỏ hơn chuỗi lấy về từ sql
+                        // kiểm tra chuỗi hiện tại mà nhỏ hơn chuỗi lấy về từ sql thì thêm số 0
                         while (newAssetCode.Length < AssetCode.Length)
                         {
                             string[] newOutput = Regex.Matches(newAssetCode, "[0-9]+|[^0-9]+")
@@ -160,24 +169,37 @@ namespace MISA.QLTS.Infrasructure.Repository
             return fixedAssets;
         }
         /// <summary>
-        /// Xóa nhiều
+        /// Thực hiện xóa nhiều bản ghi theo mảng id truyền vào
         /// </summary>
+        /// <param name="ids">Id các bản ghi muốn xóa</param>
+        /// <returns>Số bản ghi được xóa</returns>
         public int MultiDelete(Guid[] ids)
         {
             
             var stringDelete = "";
+            // Thêm các id vào chuỗi sql
             foreach(var id in ids)
             {
                 stringDelete += "'" + id + "',";
             }
             stringDelete = stringDelete.Remove(stringDelete.Length - 1,1);
+            // Câu lệnh sql thực hiện xóa nhiều
             var sqlCommand = $"DELETE FROM FixedAsset WHERE FixedAssetId IN ({stringDelete})";
             var res = _sqlConnection.Execute(sqlCommand);
             return res;
         }
-
+        /// <summary>
+        /// Hàm thực hiện tìm kiếm theo tham số truyền vào
+        /// </summary>
+        /// <param name="filterContent">Nội dung tìm kiếm</param>
+        /// <param name="departmentName">Tên bộ phận sử dụng</param>
+        /// <param name="fixedAssetCategoryName">Tên loại tài sản</param>
+        /// <param name="pageSize">Số bản ghi trong một trang</param>
+        /// <param name="pageNumber">Trang số bao nhiêu</param>
+        /// <returns></returns>
         public List<FixedAsset> Filter(string? filterContent, string? departmentName, string? fixedAssetCategoryName, int? pageSize, int? pageNumber)
         {
+            // Thêm các giá trị vào parameters
             var parameters = new DynamicParameters();
             parameters.Add("@FilterContent", filterContent);
             parameters.Add("@DepartmentName", departmentName);
@@ -185,7 +207,7 @@ namespace MISA.QLTS.Infrasructure.Repository
             var pageOffset = pageSize * (pageNumber - 1);
             parameters.Add("@PageSize", pageSize);
             parameters.Add("@PageOffset", pageOffset);
-
+            // Khởi tạo câu lệnh thực hiện tìm kiếm
             var sqlCommand = $"SELECT * FROM FixedAsset";
             if (filterContent != null) sqlCommand += $" WHERE (FixedAssetName LIKE CONCAT('%',@FilterContent,'%') " +
                 $"OR FixedAssetCode LIKE CONCAT('%',@FilterContent,'%')) AND";
@@ -198,7 +220,7 @@ namespace MISA.QLTS.Infrasructure.Repository
             else sqlCommand += $" 1 = 1";
 
             sqlCommand += $" ORDER BY CreatedDate DESC LIMIT @PageSize OFFSET @PageOffset";
-
+            // Thực hiện tìm kiếm
             var fixedAssets = _sqlConnection.Query<FixedAsset>(sqlCommand,parameters);
             return fixedAssets.ToList();
         }

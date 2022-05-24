@@ -20,7 +20,7 @@ namespace MISA.QLTS.CORE.Entities
         [IsNotNullOrEmpty]
         [NotDuplicate]
         [PropertyNameFriendly("Mã tài sản")]
-        [MaxLength(100)]
+        [MaxLength(20)]
         public string? FixedAssetCode { get; set; }
         /// <summary>
         /// Tên tài sản
@@ -38,7 +38,7 @@ namespace MISA.QLTS.CORE.Entities
         /// </summary>
         [IsNotNullOrEmpty]
         [PropertyNameFriendly("Mã phòng ban")]
-        [MaxLength(50)]
+        [MaxLength(20)]
         public string DepartmentCode { get; set; }
         /// <summary>
         /// Tên bộ phận sử dụng
@@ -55,7 +55,7 @@ namespace MISA.QLTS.CORE.Entities
         /// Mã loại tài sản
         /// </summary>
         [IsNotNullOrEmpty]
-        [MaxLength(50)]
+        [MaxLength(20)]
         [PropertyNameFriendly("Mã loại tài sản")]
         public string FixedAssetCategoryCode { get; set; }
         /// <summary>
@@ -108,14 +108,19 @@ namespace MISA.QLTS.CORE.Entities
         /// Ngày bắt đầu sử dụng
         /// </summary>
         [IsNotNullOrEmpty]
-        [PropertyNameFriendly("Ngày bắt đầu sử dụng")]
-        public DateTime ProductionYear { get; set; }
+        [PropertyNameFriendly("Năm đã sử dụng")]
+        public int ProductionYear { get; set; }
+
         /// <summary>
         /// Giá trị hao mòn năm
         /// </summary>
         [IsNotNullOrEmpty]
         [PropertyNameFriendly("Giá trị hao mòn năm")]
         public Decimal DepreciationPerYear { get; set; }
+        [IsNotNullOrEmpty]
+        [PropertyNameFriendly("Ngày bắt đầu sử dụng")]
+        public DateTime UseDate { get; set; }
+
         [NotInsertColumn]
         public bool IsValid { get; set; } = true;
     }

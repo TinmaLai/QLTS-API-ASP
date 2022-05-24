@@ -20,7 +20,12 @@ namespace MISA.QLTS.CORE.Services
         {
             _fixedAssetRepository = fixedAssetRepository;
         }
-        
+        /// <summary>
+        /// Thực hiện import từ file excel
+        /// </summary>
+        /// <param name="formFile">File Excel</param>
+        /// <returns></returns>
+        /// <exception cref="MISAValidateException"></exception>
         public List<FixedAsset> Import(IFormFile formFile)
         {
             if (formFile == null || formFile.Length <= 0)
@@ -28,7 +33,7 @@ namespace MISA.QLTS.CORE.Services
                 var errorService = new ErrorService();
                 errorService.UserMsg = Resources.ResourceVN.Error_Validate;
                 errorService.Data = ValidateErrorMsgs;
-                throw new MISAValidateException("Tệp trống", ValidateErrorMsgs);
+                throw new MISAValidateException(Resources.ResourceVN.NullFile, ValidateErrorMsgs);
             }
 
             if (!Path.GetExtension(formFile.FileName).Equals(".xlsx", StringComparison.OrdinalIgnoreCase))
@@ -36,22 +41,25 @@ namespace MISA.QLTS.CORE.Services
                 var errorService = new ErrorService();
                 errorService.UserMsg = Resources.ResourceVN.Error_Validate;
                 errorService.Data = ValidateErrorMsgs;
-                throw new MISAValidateException("Không đúng định dạng", ValidateErrorMsgs);
+                throw new MISAValidateException(Resources.ResourceVN.NoMatchFormatFile, ValidateErrorMsgs);
             }
 
             var fixedAssets = new List<FixedAsset>();
-
+            // Tạo ra stream để đọc file
             using (var stream = new MemoryStream())
             {
-               formFile.CopyToAsync(stream);
-
+                formFile.CopyToAsync(stream);
+                // Tạo ra package thuộc định dạng excel package với stream đã đọc file ở trên
                 using (var package = new ExcelPackage(stream))
                 {
+                    // Lấy theo từng worksheet
                     ExcelWorksheet worksheet = package.Workbook.Worksheets[0];
+                    // Lấy ra số hàng có dữ liệu (khoảng từ hàng bắt đầu có đến hàng có dữ liệu cuối cùng)
                     var rowCount = worksheet.Dimension.Rows;
-
+                    // Duyệt từng hàng để thêm dữ liệu vào FixedAsset
                     for (int row = 2; row <= rowCount; row++)
                     {
+                        // Thực hiện thêm từng dữ liệu vào từng thuộc tính của đối tượng fixedAsset để chuẩn bị thực hiện thêm mới
                         FixedAsset fixedAsset = new FixedAsset();
 
                         fixedAsset.FixedAssetCode = worksheet.Cells[row, 1].Value.ToString().Trim();
@@ -60,16 +68,16 @@ namespace MISA.QLTS.CORE.Services
                         fixedAsset.FixedAssetCategoryName = worksheet.Cells[row, 4].Value.ToString().Trim();
                         fixedAsset.DepartmentCode = worksheet.Cells[row, 5].Value.ToString().Trim();
                         fixedAsset.DepartmentName = worksheet.Cells[row, 6].Value.ToString().Trim();
-
                         fixedAsset.DepreciationRate = float.Parse(worksheet.Cells[row, 7].Value.ToString().Trim());
                         fixedAsset.LifeTime = int.Parse(worksheet.Cells[row, 8].Value.ToString().Trim());
                         fixedAsset.TrackedYear = int.Parse(worksheet.Cells[row, 9].Value.ToString().Trim());
                         var purchaseDateValue = worksheet.Cells[row, 10].Value;
                         var purchaseDate = ProcessStringToDate(purchaseDateValue);
                         fixedAsset.PurchaseDate = (DateTime)purchaseDate;
-                        var productionYearValue = worksheet.Cells[row, 11].Value;
-                        var productionYear = ProcessStringToDate(productionYearValue);
-                        fixedAsset.ProductionYear = (DateTime)productionYear;
+                        var UseDateValue = worksheet.Cells[row, 11].Value;
+                        var UseDate = ProcessStringToDate(UseDateValue);
+                        fixedAsset.UseDate = (DateTime)UseDate;
+                        fixedAsset.ProductionYear = int.Parse(worksheet.Cells[row, 12].Value.ToString().Trim());
 
                         // Thực hiện validate dữ liệu
                         base.ValidateObject(fixedAsset,1);
@@ -88,6 +96,11 @@ namespace MISA.QLTS.CORE.Services
             }
             
         }
+        /// <summary>
+        /// Chuyển giá trị về định dạng string, nếu null thì return null
+        /// </summary>
+        /// <param name="cellValue">Giá trị của ô truyền vào</param>
+        /// <returns></returns>
         private string ProcessValueToString(object cellValue)
         {
             if (cellValue != null)
@@ -96,6 +109,11 @@ namespace MISA.QLTS.CORE.Services
             }
             else return null;
         }
+        /// <summary>
+        /// Chuyển giá trị của ô thành dạng datetime đúng định dạng được đề ra
+        /// </summary>
+        /// <param name="cellValue"></param>
+        /// <returns></returns>
         protected virtual DateTime? ProcessStringToDate(object cellValue)
         {
             DateTime? dateReturn = null;
@@ -103,6 +121,7 @@ namespace MISA.QLTS.CORE.Services
             {
                 return null;
             }
+            // Ép kiểu về đúng định dạng của DateTime
             if (cellValue.GetType() == typeof(double))
                 return DateTime.FromOADate((double)cellValue);
             var dateString = cellValue.ToString();
@@ -110,6 +129,8 @@ namespace MISA.QLTS.CORE.Services
             Regex dateValidRegex = new Regex(@"^([0]?[1-9]|[1|2][0-9]|[3][0|1])[./-]([0]?[1-9]|[1][0-2])[./-]([0-9]{4}|[0-9]{2})$");
             if (dateValidRegex.IsMatch(dateString))
             {
+                // Nếu chuỗi truyền vào không đúng định dạng
+                // Cắt chuỗi theo /,.,-
                 var dateSplit = dateString.Split(new String[] { "/", ".", "-" }, StringSplitOptions.None);
                 var day = int.Parse(dateSplit[0]);
                 var month = int.Parse(dateSplit[1]);

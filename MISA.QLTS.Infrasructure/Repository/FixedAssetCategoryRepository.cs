@@ -17,41 +17,41 @@ namespace MISA.QLTS.Infrasructure.Repository
         {
 
         }
-        public bool CheckCodeDuplicate(Guid id, string code, int mode)
-        {
-            throw new NotImplementedException();
-        }
+        //public bool CheckCodeDuplicate(Guid id, string code, int mode)
+        //{
+        //    throw new NotImplementedException();
+        //}
 
-        public int Delete(Guid id)
-        {
-            throw new NotImplementedException();
-        }
+        //public int Delete(Guid id)
+        //{
+        //    throw new NotImplementedException();
+        //}
 
-        public FixedAssetCategory GetById(Guid assetId)
-        {
-            throw new NotImplementedException();
-        }
+        //public FixedAssetCategory GetById(Guid assetId)
+        //{
+        //    throw new NotImplementedException();
+        //}
 
-        public string getNewCode()
-        {
-            throw new NotImplementedException();
-        }
+        //public string getNewCode()
+        //{
+        //    throw new NotImplementedException();
+        //}
 
-        public List<FixedAssetCategory> getPaging(int pageIndex, int pageSize)
-        {
-            throw new NotImplementedException();
-        }
-
-
-        public int Insert(FixedAssetCategory entity)
-        {
-            throw new NotImplementedException();
-        }
+        //public List<FixedAssetCategory> getPaging(int pageIndex, int pageSize)
+        //{
+        //    throw new NotImplementedException();
+        //}
 
 
-        public int Update(Guid id, FixedAssetCategory entity)
-        {
-            throw new NotImplementedException();
-        }
+        //public int Insert(FixedAssetCategory entity)
+        //{
+        //    throw new NotImplementedException();
+        //}
+
+
+        //public int Update(Guid id, FixedAssetCategory entity)
+        //{
+        //    throw new NotImplementedException();
+        //}
     }
 }

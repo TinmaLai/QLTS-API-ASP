@@ -11,6 +11,11 @@ namespace MISA.QLTS.CORE.Exceptions
     {
         public string ErrorMsg;
         IDictionary ErrorData;
+        /// <summary>
+        /// Hàm khởi tạo MISAValidateException
+        /// </summary>
+        /// <param name="errorMsg">Chuỗi lỗi khi gọi</param>
+        /// <param name="errs">Mảng các chuỗi lỗi</param>
         public MISAValidateException(string errorMsg, List<string> errs)
         {
             ErrorMsg = errorMsg;
@@ -18,6 +23,7 @@ namespace MISA.QLTS.CORE.Exceptions
             ErrorData.Add("data", errs);
 
         }
+        // Override lại msg truyền vào cho Message
         public override string Message => this.ErrorMsg;
         public override IDictionary Data => this.ErrorData;
     }

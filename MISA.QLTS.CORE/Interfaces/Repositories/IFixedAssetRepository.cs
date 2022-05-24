@@ -22,6 +22,15 @@ namespace MISA.QLTS.CORE.Interfaces.Repositories
         /// <param name="ids"></param>
         /// <returns></returns>
         int MultiDelete(Guid[] ids);
+        /// <summary>
+        /// Thực hiện filter
+        /// </summary>
+        /// <param name="filterContent">Chuỗi tìm kiếm</param>
+        /// <param name="departmentName">Tên bộ phận sử dụng</param>
+        /// <param name="fixedAssetCategoryName">Tên loại tài sản</param>
+        /// <param name="pageSize">Số bản ghi trong 1 trang</param>
+        /// <param name="pageNumber">Trang số bao nhiêu</param>
+        /// <returns></returns>
         List<FixedAsset> Filter(string? filterContent, string? departmentName, string? fixedAssetCategoryName, int? pageSize, int? pageNumber);
 
     }

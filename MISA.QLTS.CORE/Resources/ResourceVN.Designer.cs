@@ -214,11 +214,29 @@ namespace MISA.QLTS.CORE.Resources {
         }
         
         /// <summary>
+        ///   Looks up a localized string similar to Không đúng định dạng.
+        /// </summary>
+        public static string NoMatchFormatFile {
+            get {
+                return ResourceManager.GetString("NoMatchFormatFile", resourceCulture);
+            }
+        }
+        
+        /// <summary>
         ///   Looks up a localized string similar to Không tìm thấy id này.
         /// </summary>
         public static string NotValidId {
             get {
                 return ResourceManager.GetString("NotValidId", resourceCulture);
+            }
+        }
+        
+        /// <summary>
+        ///   Looks up a localized string similar to Tệp trống.
+        /// </summary>
+        public static string NullFile {
+            get {
+                return ResourceManager.GetString("NullFile", resourceCulture);
             }
         }
         

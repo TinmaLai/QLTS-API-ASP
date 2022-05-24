@@ -17,7 +17,10 @@ namespace MISA.QLTS.API.Controllers
             _baseService = baseService;
             _baseRepository = baseRepository;
         }
-
+        /// <summary>
+        /// Base repository get toàn bộ dữ liệu
+        /// </summary>
+        /// <returns></returns>
         [HttpGet]
         public virtual IActionResult Get()
         {
@@ -31,6 +34,11 @@ namespace MISA.QLTS.API.Controllers
                 return HandleException(ex);
             }
         }
+        /// <summary>
+        /// Base Lấy thông tin một bản ghi
+        /// </summary>
+        /// <param name="entityId">Id bản ghi cần lấy</param>
+        /// <returns></returns>
         [HttpGet("{entityId}")]
         public virtual IActionResult Get(Guid entityId)
         {
@@ -44,6 +52,11 @@ namespace MISA.QLTS.API.Controllers
                 return HandleException(ex);
             }
         }
+        /// <summary>
+        /// Base thêm một bản ghi vào bảng
+        /// </summary>
+        /// <param name="entity"></param>
+        /// <returns></returns>
         [HttpPost]
         public virtual IActionResult Post(T entity)
         {
@@ -57,6 +70,29 @@ namespace MISA.QLTS.API.Controllers
                 return HandleException(ex);
             }
         }
+        /// <summary>
+        /// Xóa bản ghi theo id
+        /// </summary>
+        /// <param name="assetId"></param>
+        /// <returns></returns>
+        [HttpDelete("{entityId}")]
+        public IActionResult Delete(Guid entityId)
+        {
+            try
+            {
+                var res = _baseRepository.Delete(entityId);
+                return Ok(res);
+            }
+            catch (Exception ex)
+            {
+                return HandleException(ex);
+            }
+        }
+        /// <summary>
+        /// Base xử lý exception nếu có
+        /// </summary>
+        /// <param name="ex"></param>
+        /// <returns></returns>
         private IActionResult HandleException(Exception ex)
         {
             var res = new
@@ -66,6 +102,7 @@ namespace MISA.QLTS.API.Controllers
                 errorCode = "001",
                 data = ex.Data
             };
+            // Nếu ex thuộc validate được viết ở trên
             if (ex is MISAValidateException)
             {
                 return StatusCode(400, res);

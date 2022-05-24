@@ -28,43 +28,59 @@ namespace MISA.QLTS.Infrasructure.Repository
             _tableName = typeof(T).Name;
 
         }
+        /// <summary>
+        /// Hàm check mã trùng
+        /// </summary>
+        /// <param name="entityId">Id của bản ghi</param>
+        /// <param name="entityCode">Mã của bản ghi</param>
+        /// <param name="mode">Trạng thái khi thực hiện validate (Thêm, sửa)</param>
+        /// <returns></returns>
         public bool CheckCodeDuplicate(Guid entityId, string entityCode, int mode)
         {
-            
+            // Khởi tạo câu sql
             var sqlCheck = "";
-
+            // Nếu trạng thái là thêm
             if (mode == 1)
             {
+                // Câu lệnh check mã trùng ở trong database
                 sqlCheck = $"SELECT * FROM FixedAsset WHERE {_tableName}Code = @{_tableName}Code";
 
             }
-            else if (mode == 0)
+            else if (mode == 0) // Nếu trạng thái là sửa
             {
+                // Câu lệnh check mã trùng ở trong database
                 sqlCheck = $"SELECT * FROM FixedAsset WHERE {_tableName}Code = @{_tableName}Code AND {_tableName}Id <> @{_tableName}Id";
             }
-
+            // Add các giá trị của biến vào parameters
             var parameters = new DynamicParameters();
             parameters.Add($"@{_tableName}Id", entityId);
             parameters.Add($"@{_tableName}Code", entityCode);
             var res = _sqlConnection.QueryFirstOrDefault<object>(sqlCheck, parameters);
-
+            // Nếu truy vấn trả về kết quả là null (Không có bản ghi có trùng mã) thì return true (Không bị trùng mã)
             if (res != null)
             {
                 return true;
             }
             return false;
         }
-
+        /// <summary>
+        /// Thực hiện xóa bản ghi theo id truyền vào
+        /// </summary>
+        /// <param name="entityId">Id của đối tượng</param>
+        /// <returns>Số bản ghi bị xóa</returns>
         public int Delete(Guid entityId)
         {
-            var sqlCommand = $"DELETE FROM {_tableName} WHERE FixedAssetId=@FixedAssetId";
+            var sqlCommand = $"DELETE FROM {_tableName} WHERE {_tableName}Id=@EntityId";
             var parameters = new DynamicParameters();
-            parameters.Add("@FixedAssetId", entityId);
+            parameters.Add("@EntityId", entityId);
             // Thực hiện truy vấn
             var res = _sqlConnection.Execute(sql: sqlCommand, param: parameters);
             return res;
         }
-
+        /// <summary>
+        /// Lấy tất cả bản ghi
+        /// </summary>
+        /// <returns>Mảng tất cả bản ghi</returns>
         public List<T> Get()
         {
             // Khai báo câu truy vấn
@@ -72,7 +88,11 @@ namespace MISA.QLTS.Infrasructure.Repository
             var entities = _sqlConnection.Query<T>(sqlCommand);
             return entities.ToList();
         }
-
+        /// <summary>
+        /// Lấy bản ghi theo id truyền vào
+        /// </summary>
+        /// <param name="entityId"></param>
+        /// <returns>Bản ghi</returns>
         public T GetById(Guid entityId)
         {
             var sqlCommand = $"SELECT * FROM {_tableName} WHERE {_tableName}Id = @EntityId";

@@ -13,11 +13,21 @@ namespace MISA.QLTS.API.Controllers
     {
         IDepartmentRepository _departmentRepository;
         IDepartmentService _departmentService;
+        /// <summary>
+        /// Hàm khởi tạo departmentRepository, departmentService
+        /// </summary>
+        /// <param name="departmentRepository"></param>
+        /// <param name="departmentService"></param>
         public DepartmentsController(IDepartmentRepository departmentRepository, IDepartmentService departmentService):base(departmentService,departmentRepository)
         {
             _departmentRepository = departmentRepository;
             _departmentService = departmentService;
         }
+        /// <summary>
+        /// Hàm xử lý exception
+        /// </summary>
+        /// <param name="ex"></param>
+        /// <returns></returns>
         private IActionResult HandleException(Exception ex)
         {
             var res = new

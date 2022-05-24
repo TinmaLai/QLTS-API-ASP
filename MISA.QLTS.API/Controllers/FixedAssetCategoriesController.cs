@@ -14,6 +14,11 @@ namespace MISA.QLTS.API.Controllers
         IFixedAssetCategoryRepository _fixedAssetCategoryRepository;
         IFixedAssetCategoryService _fixedAssetCategoryService;
         IConfiguration _configuration;
+        /// <summary>
+        /// Khởi tạo FixedAssetCategoryRepository, FixedAssetCategoryService
+        /// </summary>
+        /// <param name="fixedAssetCategoryRepository"></param>
+        /// <param name="fixedAssetCategoryService"></param>
         public FixedAssetCategoriesController(IFixedAssetCategoryRepository fixedAssetCategoryRepository, IFixedAssetCategoryService fixedAssetCategoryService):base(fixedAssetCategoryService,fixedAssetCategoryRepository)
         {
             _fixedAssetCategoryRepository = fixedAssetCategoryRepository;
