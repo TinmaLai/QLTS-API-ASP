@@ -145,8 +145,9 @@ namespace MISA.QLTS.API.Controllers
         {
             try
             {
-                var fixedAssets = _fixedAssetRepository.Filter(searchContent, departmentName, fixedAssetCategoryName, pageSize, pageNumber);
-                return Ok(fixedAssets);
+                var res = _fixedAssetRepository.Filter(searchContent, departmentName, fixedAssetCategoryName, pageSize, pageNumber);
+                
+                return Ok(res);
             }
             catch (Exception ex)
             {

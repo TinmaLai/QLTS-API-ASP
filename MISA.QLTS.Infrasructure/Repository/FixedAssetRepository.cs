@@ -197,7 +197,7 @@ namespace MISA.QLTS.Infrasructure.Repository
         /// <param name="pageSize">Số bản ghi trong một trang</param>
         /// <param name="pageNumber">Trang số bao nhiêu</param>
         /// <returns></returns>
-        public List<FixedAsset> Filter(string? filterContent, string? departmentName, string? fixedAssetCategoryName, int? pageSize, int? pageNumber)
+        public object Filter(string? filterContent, string? departmentName, string? fixedAssetCategoryName, int? pageSize, int? pageNumber)
         {
             // Thêm các giá trị vào parameters
             var parameters = new DynamicParameters();
@@ -218,11 +218,17 @@ namespace MISA.QLTS.Infrasructure.Repository
 
             if (fixedAssetCategoryName != null) sqlCommand += $" FixedAssetCategoryName = @FixedAssetCategoryName";
             else sqlCommand += $" 1 = 1";
-
+            var fixedAssetsNoOffset = _sqlConnection.Query<FixedAsset>(sqlCommand, parameters);
             sqlCommand += $" ORDER BY CreatedDate DESC LIMIT @PageSize OFFSET @PageOffset";
             // Thực hiện tìm kiếm
             var fixedAssets = _sqlConnection.Query<FixedAsset>(sqlCommand,parameters);
-            return fixedAssets.ToList();
+            var res = new
+            {
+                fixedAssets = (List<FixedAsset>)fixedAssets.ToList(),
+                count = (int)fixedAssetsNoOffset.Count()
+            };
+            return res;
+            //return fixedAssets.ToList();
         }
     }
 }

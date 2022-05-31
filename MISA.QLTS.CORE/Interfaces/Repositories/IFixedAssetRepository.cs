@@ -31,7 +31,7 @@ namespace MISA.QLTS.CORE.Interfaces.Repositories
         /// <param name="pageSize">Số bản ghi trong 1 trang</param>
         /// <param name="pageNumber">Trang số bao nhiêu</param>
         /// <returns></returns>
-        List<FixedAsset> Filter(string? filterContent, string? departmentName, string? fixedAssetCategoryName, int? pageSize, int? pageNumber);
+        object Filter(string? filterContent, string? departmentName, string? fixedAssetCategoryName, int? pageSize, int? pageNumber);
 
     }
 }

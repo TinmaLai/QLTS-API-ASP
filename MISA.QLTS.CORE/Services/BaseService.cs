@@ -56,8 +56,7 @@ namespace MISA.QLTS.CORE.Services
             var properties = typeof(T).GetProperties();
             foreach (var prop in properties)
             {
-                //
-                
+              
                 // Lấy tên của prop
                 var propName = prop.Name;
                 // Lấy tên gọi được của prop (VD: Tên tài sản, Mã tài sản, ...)
