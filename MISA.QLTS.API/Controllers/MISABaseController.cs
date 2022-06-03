@@ -1,4 +1,5 @@
-﻿using Microsoft.AspNetCore.Http;
+﻿using Microsoft.AspNetCore.Authorization;
+using Microsoft.AspNetCore.Http;
 using Microsoft.AspNetCore.Mvc;
 using MISA.QLTS.CORE.Exceptions;
 using MISA.QLTS.CORE.Interfaces.Repositories;
@@ -6,7 +7,9 @@ using MISA.QLTS.CORE.Interfaces.Services;
 
 namespace MISA.QLTS.API.Controllers
 {
+    [Authorize]
     [Route("api/v1/[controller]")]
+    
     [ApiController]
     public abstract class MISABaseController<T> : ControllerBase
     {
@@ -21,6 +24,7 @@ namespace MISA.QLTS.API.Controllers
         /// Base repository get toàn bộ dữ liệu
         /// </summary>
         /// <returns></returns>
+        
         [HttpGet]
         public virtual IActionResult Get()
         {

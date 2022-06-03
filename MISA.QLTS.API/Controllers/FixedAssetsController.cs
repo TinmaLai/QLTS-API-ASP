@@ -1,4 +1,5 @@
-﻿using Microsoft.AspNetCore.Http;
+﻿using Microsoft.AspNetCore.Authorization;
+using Microsoft.AspNetCore.Http;
 using Microsoft.AspNetCore.Mvc;
 using MISA.QLTS.CORE.Entities;
 using MISA.QLTS.CORE.Exceptions;
@@ -9,6 +10,7 @@ using MISA.QLTS.Infrasructure.Repository;
 namespace MISA.QLTS.API.Controllers
 {
     [Route("api/v1/[controller]")]
+    
     [ApiController]
     public class FixedAssetsController : MISABaseController<FixedAsset>
     {

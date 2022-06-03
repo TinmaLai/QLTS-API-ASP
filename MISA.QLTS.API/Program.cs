@@ -1,4 +1,5 @@
-﻿using MISA.QLTS.CORE.Interfaces.Repositories;
+﻿using Microsoft.AspNetCore.Authentication.Cookies;
+using MISA.QLTS.CORE.Interfaces.Repositories;
 using MISA.QLTS.CORE.Interfaces.Services;
 using MISA.QLTS.CORE.Services;
 using MISA.QLTS.Infrasructure.Repository;
@@ -28,16 +29,40 @@ builder.Services.AddCors(options =>
         builder =>
         {
             builder
-            .AllowAnyOrigin()
+            .WithOrigins(
+                    "http://localhost:8080") //Note:  The URL must be specified without a trailing slash (/).
             .AllowAnyMethod()
-            .AllowAnyHeader();
+            .AllowAnyHeader()
+            .SetIsOriginAllowed(_ => true)
+            .AllowCredentials();
         });
+    
+    
 });
 builder.Services.AddMvc()
         .AddNewtonsoftJson(options =>
         {
             options.SerializerSettings.ContractResolver = new DefaultContractResolver();
         });
+builder.Services.AddAuthentication(CookieAuthenticationDefaults.AuthenticationScheme)
+    .AddCookie(options =>
+    {
+        options.Cookie = new CookieBuilder
+        {
+            //Domain = "",
+            HttpOnly = true,
+            Name = ".aspNetCoreDemo.Security.Cookie",
+            Path = "/",
+            SameSite = SameSiteMode.Lax,
+            SecurePolicy = CookieSecurePolicy.SameAsRequest
+        };
+        options.ExpireTimeSpan = TimeSpan.FromMinutes(1);
+        options.SlidingExpiration = true;
+    });
+
+
+
+
 var app = builder.Build();
 
 // Configure the HTTP request pipeline.
@@ -46,12 +71,17 @@ if (app.Environment.IsDevelopment())
     app.UseSwagger();
     app.UseSwaggerUI();
 }
+
 app.UseCors("AllowAll");
-app.UseHttpsRedirection();
+//app.UseHttpsRedirection();
+app.UseAuthentication();
 
 app.UseAuthorization();
 
+app.MapRazorPages();
+app.MapDefaultControllerRoute();
 app.MapControllers();
+
 
 
 
