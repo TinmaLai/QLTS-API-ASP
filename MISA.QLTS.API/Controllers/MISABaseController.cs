@@ -109,7 +109,7 @@ namespace MISA.QLTS.API.Controllers
             // Nếu ex thuộc validate được viết ở trên
             if (ex is MISAValidateException)
             {
-                return StatusCode(400, res);
+                return StatusCode(200, res);
 
             }
             else return StatusCode(500, res);

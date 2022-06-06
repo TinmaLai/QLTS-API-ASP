@@ -4,6 +4,7 @@ using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Http;
 using Microsoft.AspNetCore.Mvc;
 using MISA.QLTS.CORE.Entities;
+using MISA.QLTS.CORE.Exceptions;
 using System.Security.Claims;
 
 namespace MISA.QLTS.API.Controllers
@@ -24,7 +25,7 @@ namespace MISA.QLTS.API.Controllers
             var user = AuthenticateUser(userLogin.Username, userLogin.Password);
             if(user == null)
             {
-                return BadRequest();
+                return StatusCode(200, -1);
             }
             var claims = new List<Claim>
             {
@@ -72,6 +73,23 @@ namespace MISA.QLTS.API.Controllers
             await HttpContext.SignOutAsync(CookieAuthenticationDefaults.AuthenticationScheme);
             //Redirect to home page    
             return Ok();
+        }
+        private IActionResult HandleException(Exception ex)
+        {
+            var res = new
+            {
+                devMsg = ex.Message,
+                userMsg = "Có lỗi xảy ra, vui lòng liên hệ MISA để được hỗ trợ.",
+                errorCode = "001",
+                data = ex.Data
+            };
+            // Nếu ex thuộc validate được viết ở trên
+            if (ex is MISAValidateException)
+            {
+                return StatusCode(400, res);
+
+            }
+            else return StatusCode(500, res);
         }
     }
 }

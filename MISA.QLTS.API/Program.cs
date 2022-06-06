@@ -56,7 +56,7 @@ builder.Services.AddAuthentication(CookieAuthenticationDefaults.AuthenticationSc
             SameSite = SameSiteMode.Lax,
             SecurePolicy = CookieSecurePolicy.SameAsRequest
         };
-        options.ExpireTimeSpan = TimeSpan.FromMinutes(1);
+        options.ExpireTimeSpan = TimeSpan.FromDays(1);
         options.SlidingExpiration = true;
     });
 
