@@ -49,7 +49,7 @@ namespace MISA.QLTS.API.Controllers
         /// <returns>User đúng tài khoản mật khẩu hoặc null</returns>
         private User AuthenticateUser(string username, string password)
         {
-            
+            // Hash mật khẩu trước khi so sánh
             if (username == "tinmalai" && password == "123")
             {
                 return new User()
