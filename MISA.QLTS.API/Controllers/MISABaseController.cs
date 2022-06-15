@@ -7,7 +7,7 @@ using MISA.QLTS.CORE.Interfaces.Services;
 
 namespace MISA.QLTS.API.Controllers
 {
-    [Authorize]
+    
     [Route("api/v1/[controller]")]
     
     [ApiController]

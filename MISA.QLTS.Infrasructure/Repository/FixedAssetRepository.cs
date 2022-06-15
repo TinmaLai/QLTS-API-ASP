@@ -23,44 +23,7 @@ namespace MISA.QLTS.Infrasructure.Repository
             _connectionString = configuration.GetConnectionString("NBTIN");
             _sqlConnection = new MySqlConnection(_connectionString);
         }
-        /// <summary>
-        /// Check mã trùng
-        /// </summary>
-        /// <param name="fixedAssetId">Id tài sản</param>
-        /// <param name="fixedAssetCode">Code tài sản</param>
-        /// <param name="mode">Thêm = 0, sửa = 1</param>
-        /// <returns></returns>
-        //public bool CheckCodeDuplicate(Guid fixedAssetId, string fixedAssetCode, int mode)
-        //{
-
-        //    var sqlCheck = "";
-
-        //    if (mode == 1)
-        //    {
-        //        sqlCheck = $"SELECT * FROM FixedAsset WHERE FixedAssetCode = @FixedAssetCode";
-
-        //    }
-        //    else if (mode == 0)
-        //    {
-        //        sqlCheck = $"SELECT * FROM FixedAsset WHERE FixedAssetCode = @FixedAssetCode AND FixedAssetId <> @FixedAssetId";
-        //    }
-
-        //    var parameters = new DynamicParameters();
-        //    parameters.Add("@FixedAssetId", fixedAssetId);
-        //    parameters.Add("@FixedAssetCode", fixedAssetCode);
-        //    var res = _sqlConnection.QueryFirstOrDefault<object>(sqlCheck, parameters);
-
-        //    if (res != null)
-        //    {
-        //        return true;
-        //    }
-        //    return false;
-        //}
-        /// <summary>
-        /// Hàm check xem chuỗi truyền vào có phải dạng số hay không
-        /// </summary>
-        /// <param name="pText"></param>
-        /// <returns></returns>
+        
         public bool IsNumber(string pText)
         {
             Regex regex = new Regex(@"^[-+]?[0-9]*.?[0-9]+$");
@@ -230,5 +193,43 @@ namespace MISA.QLTS.Infrasructure.Repository
             return res;
             //return fixedAssets.ToList();
         }
+        /// <summary>
+        /// Hàm lọc danh sách tài sản để thêm vào chứng từ
+        /// </summary>
+        /// <param name="ids"></param>
+        /// <returns>List tài sản còn lại để thêm vào chứng từ</returns>
+        public object GetLicenseAssets(Guid[] ids, string? filterContent, int? pageSize, int? pageNumber)
+        {
+            var stringFilter = "";
+            // Thêm các id vào chuỗi sql
+            foreach (var id in ids)
+            {
+                stringFilter += "'" + id + "',";
+            }
+            if(stringFilter != "")
+            stringFilter = stringFilter.Remove(stringFilter.Length - 1, 1);
+            var sqlFilterAssets = $"SELECT * FROM FixedAsset WHERE FixedAssetId NOT IN ({stringFilter}";
+            if (stringFilter == "") sqlFilterAssets += "'')";
+            else sqlFilterAssets += ")";
+            var parameters = new DynamicParameters();
+            parameters.Add("@FilterContent", filterContent);
+            var pageOffset = pageSize * (pageNumber - 1);
+            parameters.Add("@PageSize", pageSize);
+            parameters.Add("@PageOffset", pageOffset);
+
+            if (filterContent != null) sqlFilterAssets += $" AND (FixedAssetName LIKE CONCAT('%',@FilterContent,'%') " +
+               $"OR FixedAssetCode LIKE CONCAT('%',@FilterContent,'%'))";
+            var fixedAssetsNoOffset = _sqlConnection.Query<FixedAsset>(sqlFilterAssets, parameters);
+            sqlFilterAssets += $" ORDER BY CreatedDate DESC LIMIT @PageSize OFFSET @PageOffset";
+            // Thực hiện tìm kiếm
+            var fixedAssets = _sqlConnection.Query<FixedAsset>(sqlFilterAssets, parameters);
+            var res = new
+            {
+                fixedAssets = (List<FixedAsset>) fixedAssets.ToList(),
+                count = (int)fixedAssetsNoOffset.Count()
+            };
+            return res;
+        }
+
     }
 }

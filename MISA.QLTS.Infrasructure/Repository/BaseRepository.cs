@@ -43,13 +43,13 @@ namespace MISA.QLTS.Infrasructure.Repository
             if (mode == 1)
             {
                 // Câu lệnh check mã trùng ở trong database
-                sqlCheck = $"SELECT * FROM FixedAsset WHERE {_tableName}Code = @{_tableName}Code";
+                sqlCheck = $"SELECT * FROM {_tableName} WHERE {_tableName}Code = @{_tableName}Code";
 
             }
             else if (mode == 0) // Nếu trạng thái là sửa
             {
                 // Câu lệnh check mã trùng ở trong database
-                sqlCheck = $"SELECT * FROM FixedAsset WHERE {_tableName}Code = @{_tableName}Code AND {_tableName}Id <> @{_tableName}Id";
+                sqlCheck = $"SELECT * FROM {_tableName} WHERE {_tableName}Code = @{_tableName}Code AND {_tableName}Id <> @{_tableName}Id";
             }
             // Add các giá trị của biến vào parameters
             var parameters = new DynamicParameters();

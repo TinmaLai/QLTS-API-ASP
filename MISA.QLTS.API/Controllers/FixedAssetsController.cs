@@ -156,5 +156,19 @@ namespace MISA.QLTS.API.Controllers
                 return HandleException(ex);
             }
         }
+        [HttpGet("LicenseAssets")]
+        public IActionResult GetLicenseAssets([FromQuery] Guid[] ids, string? filterContent, int? pageSize = 15, int? pageNumber = 1)
+        {
+            try
+            {
+
+                var res = _fixedAssetRepository.GetLicenseAssets(ids, filterContent, pageSize, pageNumber);
+                return Ok(res);
+            }
+            catch (Exception ex)
+            {
+                return HandleException(ex);
+            }
+        }
     }
 }

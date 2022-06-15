@@ -32,6 +32,11 @@ namespace MISA.QLTS.CORE.Interfaces.Repositories
         /// <param name="pageNumber">Trang số bao nhiêu</param>
         /// <returns></returns>
         object Filter(string? filterContent, string? departmentName, string? fixedAssetCategoryName, int? pageSize, int? pageNumber);
-
+        /// <summary>
+        /// Hàm lọc ra danh sách tài sản còn lại để thêm vào chứng từ
+        /// </summary>
+        /// <param name="ids"></param>
+        /// <returns>Danh sách tài sản còn lại để thêm vào chứng từ</returns>
+        object GetLicenseAssets(Guid[] ids, string? filterContent, int? pageSize, int? pageNumber);
     }
 }
