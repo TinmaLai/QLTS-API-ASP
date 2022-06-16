@@ -9,6 +9,7 @@ using System;
 using System.Collections.Generic;
 using System.Linq;
 using System.Text;
+using System.Text.RegularExpressions;
 using System.Threading.Tasks;
 
 namespace MISA.QLTS.Infrasructure.Repository
@@ -103,10 +104,114 @@ namespace MISA.QLTS.Infrasructure.Repository
 
             return entity;
         }
-
-        public string getNewCode()
+        /// <summary>
+        /// Check 1 kí tự có phải là số hay không
+        /// </summary>
+        /// <param name="pText"></param>
+        /// <returns></returns>
+        public bool IsNumber(string pText)
         {
-            throw new NotImplementedException();
+            Regex regex = new Regex(@"^[-+]?[0-9]*.?[0-9]+$");
+            return regex.IsMatch(pText);
+        }
+        /// <summary>
+        /// Thực hiện lấy mã mới
+        /// </summary>
+        /// <returns>Mã mới</returns>
+        public string GetNewCode()
+        {
+            // câu lệnh sql lấy mã tài sản theo ngày giảm dần;
+            string sqlCommand = $"SELECT {_tableName}Code FROM {_tableName} ORDER BY CreatedDate DESC";
+
+            // Lấy mã tài sản gần nhất
+            var AssetCode = _sqlConnection.QueryFirstOrDefault<string>(sql: sqlCommand);
+            // khai báo mã tài sản mới trả vê
+            var newAssetCode = "";
+
+            if (string.IsNullOrEmpty(AssetCode))
+            {
+                newAssetCode = "TS00001";
+            }
+
+            else
+            {
+                // trả về mảng chuỗi và số riêng biệt.
+                string[] output = Regex.Matches(AssetCode, "[0-9]+|[^0-9]+")
+                .Cast<Match>()
+                .Select(match => match.Value)
+                .ToArray();
+
+                // khai báo giá trị sau khi cộng
+                int currentMax = 0;
+
+                var valueAssetCode = "";
+                var numberAssetCode = "";
+
+                // lưu các giá trị trước đó
+                var saveValue = "";
+                var newAssetCodeValue = "";
+
+                // nếu mảng trả về lớn hơn 1 phần
+                for (var i = 0; i < output.Length; i++)
+                {
+                    // kiêm tra xem phần tử cuố là số hay chuỗi
+                    if (IsNumber(output[output.Length - 1]) == false)
+                    {
+                        newAssetCode = saveValue + output[i] + 1;
+
+                    }
+                    else
+                    {
+
+                        newAssetCodeValue = saveValue;
+                    }
+
+                    saveValue += output[i];
+
+                }
+                // Kiểm tra xem có giá trị lưu trước đó không?
+                if (saveValue != "")
+                {
+                    if (IsNumber(output[output.Length - 1]) == true)
+                    {
+                        //chuyển chuỗi về dạng số nếu có số 0;
+                        var partNumber = int.Parse(output[output.Length - 1]);
+                        if (currentMax < partNumber)
+                        {
+                            // giá trị được tăng lên 1
+                            currentMax = partNumber + 1;
+                        }
+
+                        // Ghép chuỗi;
+                        newAssetCode = newAssetCodeValue + currentMax;
+                        // Nếu chuỗi hiện tại mà nhỏ hơn chuỗi lấy về từ sql
+                        if (newAssetCode.Length < AssetCode.Length)
+                        {
+                            // kiểm tra chừng nào chuỗi hiện tại mà nhỏ hơn chuỗi lấy về từ sql
+                            while (newAssetCode.Length < AssetCode.Length)
+                            {
+                                string[] newOutput = Regex.Matches(newAssetCode, "[0-9]+|[^0-9]+")
+                                   .Cast<Match>()
+                                   .Select(match => match.Value)
+                                   .ToArray();
+                                // chuỗi kí tự
+                                valueAssetCode = newAssetCodeValue;
+                                // chuối số
+                                numberAssetCode = newOutput[newOutput.Length - 1];
+                                // chèn 0 vào giữa chuỗi kí tự với chuỗi số
+                                newAssetCode = valueAssetCode + "0" + numberAssetCode;
+                            }
+
+                        }
+                    }
+                    else
+                    {
+                        newAssetCode = saveValue + 1;
+                    }
+                }
+            }
+
+            return newAssetCode;
         }
 
         public List<T> getPaging(int pageIndex, int pageSize)
@@ -114,7 +219,11 @@ namespace MISA.QLTS.Infrasructure.Repository
             throw new NotImplementedException();
         }
         
-
+        /// <summary>
+        /// Thêm bản ghi base
+        /// </summary>
+        /// <param name="entity"></param>
+        /// <returns></returns>
         public int Insert(T entity)
         {
             var columnNames = "";
@@ -155,7 +264,12 @@ namespace MISA.QLTS.Infrasructure.Repository
             return rowBeAffects;
         }
         
-
+        /// <summary>
+        /// Sửa bản ghi base
+        /// </summary>
+        /// <param name="id"></param>
+        /// <param name="entity"></param>
+        /// <returns></returns>
         public int Update(Guid id, T entity)
         {
             var columnNames = "";
@@ -195,5 +309,6 @@ namespace MISA.QLTS.Infrasructure.Repository
             return rowBeAffects;
         }
 
+        
     }
 }

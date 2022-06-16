@@ -42,7 +42,7 @@ namespace MISA.QLTS.CORE.Interfaces.Repositories
         /// Tự sinh mã mới
         /// </summary>
         /// <returns>Mã</returns>
-        string getNewCode();
+        string GetNewCode();
         /// <summary>
         /// Check trùng mã
         /// </summary>

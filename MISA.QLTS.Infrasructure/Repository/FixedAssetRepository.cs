@@ -23,7 +23,11 @@ namespace MISA.QLTS.Infrasructure.Repository
             _connectionString = configuration.GetConnectionString("NBTIN");
             _sqlConnection = new MySqlConnection(_connectionString);
         }
-        
+        /// <summary>
+        /// Check 1 kí tự có phải là số hay không
+        /// </summary>
+        /// <param name="pText"></param>
+        /// <returns></returns>
         public bool IsNumber(string pText)
         {
             Regex regex = new Regex(@"^[-+]?[0-9]*.?[0-9]+$");

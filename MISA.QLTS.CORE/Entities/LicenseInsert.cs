@@ -18,22 +18,25 @@ namespace MISA.QLTS.CORE.Entities
         /// Mã chứng từ
         /// </summary>
         [IsNotNullOrEmpty]
+        [PropertyNameFriendly("Mã chứng từ")]
         [NotDuplicate]
         public string LicenseCode { get; set; }
         /// <summary>
         /// Ngày bắt đầu sử dụng
         /// </summary>
         [IsNotNullOrEmpty]
+        [PropertyNameFriendly("Ngày bắt đầu sử dụng")]
         public DateTime UseDate { get; set; }
         /// <summary>
         /// Ngày ghi tăng
         /// </summary>
         [IsNotNullOrEmpty]
+        [PropertyNameFriendly("Ngày ghi tăng")]
         public DateTime WriteUpdate { get; set; }
         /// <summary>
         /// Ghi chú
         /// </summary>
-        public string Description { get; set; }
+        public string? Description { get; set; }
         /// <summary>
         /// Tổng nguyên giá
         /// </summary>

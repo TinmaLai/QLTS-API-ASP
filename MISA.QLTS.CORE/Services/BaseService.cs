@@ -20,6 +20,12 @@ namespace MISA.QLTS.CORE.Services
             _baseRepository = baseRepository;
             ValidateErrorMsgs = new List<string>();
         }
+        /// <summary>
+        /// Hàm insert nhưng check validate
+        /// </summary>
+        /// <param name="entity"></param>
+        /// <returns></returns>
+        /// <exception cref="MISAValidateException"></exception>
         public int Insert(T entity)
         {
             int mode = 1;

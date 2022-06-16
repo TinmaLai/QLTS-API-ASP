@@ -19,6 +19,23 @@ namespace MISA.QLTS.API.Controllers
             _licenseService = licenseService;
         }
         /// <summary>
+        /// Lấy mã chứng từ mới
+        /// </summary>
+        /// <returns></returns>
+        [HttpGet("NewAssetCode")]
+        public IActionResult GetNewCode()
+        {
+            try
+            {
+                string newLicenseCode = _licenseRepository.GetNewCode();
+                return Ok(newLicenseCode);
+            }
+            catch (Exception ex)
+            {
+                return HandleException(ex);
+            }
+        }
+        /// <summary>
         /// Sửa chứng từ theo id
         /// </summary>
         /// <param name="assetId"></param>
@@ -31,6 +48,27 @@ namespace MISA.QLTS.API.Controllers
             {
                 var res = _licenseService.Update(licenseId, license);
                 return StatusCode(201, res);
+            }
+            catch (Exception ex)
+            {
+                return HandleException(ex);
+            }
+        }
+        /// <summary>
+        /// Hàm lọc theo số chứng từ, nội dung ở bảng chứng từ
+        /// </summary>
+        /// <param name="filterContent"></param>
+        /// <param name="pageSize"></param>
+        /// <param name="pageNumber"></param>
+        /// <returns></returns>
+        [HttpGet("filter")]
+        public IActionResult Filter(string? filterContent, int? pageSize = 15, int? pageNumber = 1)
+        {
+            try
+            {
+                var res = _licenseRepository.Filter(filterContent, pageSize, pageNumber);
+
+                return Ok(res);
             }
             catch (Exception ex)
             {

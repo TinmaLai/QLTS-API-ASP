@@ -30,7 +30,7 @@ namespace MISA.QLTS.API.Controllers
         {
             try
             {
-                string newAssetCode = _fixedAssetRepository.getNewCode();
+                string newAssetCode = _fixedAssetRepository.GetNewCode();
                 return Ok(newAssetCode);
             }
             catch (Exception ex)

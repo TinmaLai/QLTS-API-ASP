@@ -23,9 +23,40 @@ namespace MISA.QLTS.API.Controllers
         {
             try
             {
-                var res = _licenseDetailRepository.MultiInsert(licenseInsert);
+                var res = _licenseDetailService.Insert(licenseInsert);
                 return Ok(res);
             } 
+            catch(Exception ex)
+            {
+                return HandleException(ex);
+            }
+        }
+        [HttpGet("getLicenseInsertById")]
+        public IActionResult GetLicenseInsertById(Guid licenseMasterId)
+        {
+            try
+            {
+                var res = _licenseDetailRepository.GetLicenseInsertById(licenseMasterId);
+                return Ok(res);
+            }
+            catch(Exception ex)
+            {
+                return HandleException(ex);
+            }
+        }
+        /// <summary>
+        /// Sửa bản thi master - detail
+        /// </summary>
+        /// <param name="licenseInsert"></param>
+        /// <returns></returns>
+        [HttpPut("{licenseId}")]
+        public IActionResult UpdateLicenseInsert(LicenseInsert licenseInsert, Guid licenseId)
+        {
+            try
+            {
+                var res = _licenseDetailService.Update(licenseInsert, licenseId);
+                return StatusCode(201, res);
+            }
             catch(Exception ex)
             {
                 return HandleException(ex);
@@ -36,6 +67,19 @@ namespace MISA.QLTS.API.Controllers
         /// </summary>
         /// <param name="ex"></param>
         /// <returns></returns>
+        [HttpGet("getDetailAssets")]
+        public IActionResult GetDetailAssets(Guid licenseId)
+        {
+            try
+            {
+                var res = _licenseDetailRepository.GetDetailAssets(licenseId);
+                return Ok(res);
+            }
+            catch (Exception ex)
+            {
+                return HandleException(ex);
+            }
+        }
         private IActionResult HandleException(Exception ex)
         {
             var res = new

@@ -33,7 +33,7 @@ namespace MISA.QLTS.CORE.Entities
         /// <summary>
         /// Ghi chú
         /// </summary>
-        public string Description { get; set; }
+        public string? Description { get; set; }
         /// <summary>
         /// Tổng nguyên giá
         /// </summary>
