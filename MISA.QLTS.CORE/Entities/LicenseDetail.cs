@@ -23,7 +23,7 @@ namespace MISA.QLTS.CORE.Entities
         /// <summary>
         /// Thông tin nguồn tài sản
         /// </summary>
-        //public string DetailJson { get; set; }
+        public string? DetailJson { get; set; }
 
     }
 }

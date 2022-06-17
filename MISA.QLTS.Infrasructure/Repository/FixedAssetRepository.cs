@@ -204,18 +204,19 @@ namespace MISA.QLTS.Infrasructure.Repository
         /// <returns>List tài sản còn lại để thêm vào chứng từ</returns>
         public object GetLicenseAssets(Guid[] ids, string? filterContent, int? pageSize, int? pageNumber)
         {
-            var stringFilter = "";
-            // Thêm các id vào chuỗi sql
-            foreach (var id in ids)
-            {
-                stringFilter += "'" + id + "',";
-            }
-            if(stringFilter != "")
-            stringFilter = stringFilter.Remove(stringFilter.Length - 1, 1);
-            var sqlFilterAssets = $"SELECT * FROM FixedAsset WHERE FixedAssetId NOT IN ({stringFilter}";
-            if (stringFilter == "") sqlFilterAssets += "'')";
-            else sqlFilterAssets += ")";
             var parameters = new DynamicParameters();
+            
+            parameters.Add("@ids", ids);
+            
+            var sqlFilterAssets = $"SELECT * FROM FixedAsset WHERE FixedAssetId NOT IN ";
+            if (ids.Length > 0)
+            {
+                sqlFilterAssets += "@ids";
+            } else
+            {
+                sqlFilterAssets += "('')";
+            }
+
             parameters.Add("@FilterContent", filterContent);
             var pageOffset = pageSize * (pageNumber - 1);
             parameters.Add("@PageSize", pageSize);
