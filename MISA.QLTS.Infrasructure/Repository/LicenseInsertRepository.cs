@@ -11,12 +11,12 @@ using System.Threading.Tasks;
 
 namespace MISA.QLTS.Infrasructure.Repository
 {
-    public class LicenseDetailRepository:BaseRepository<LicenseDetail>, ILicenseDetailRepository
+    public class LicenseInsertRepository: BaseRepository<LicenseInsert>, ILicenseInsertRepository
     {
         IConfiguration _configuration;
         readonly string _connectionString = string.Empty;
         protected MySqlConnection _sqlConnection;
-        public LicenseDetailRepository(IConfiguration configuration) : base(configuration)
+        public LicenseInsertRepository(IConfiguration configuration) : base(configuration)
         {
             _configuration = configuration;
             _connectionString = configuration.GetConnectionString("NBTIN");
@@ -73,8 +73,8 @@ namespace MISA.QLTS.Infrasructure.Repository
                 "ld.LicenseId LEFT JOIN FixedAsset fa ON ld.FixedAssetId = fa.FixedAssetId" +
                 " WHERE l.LicenseId = @LicenseId ";
             var detailAssets = _sqlConnection.Query<object>(sqlGetLicenseDetail, parameter);
-            
-            var res = new 
+
+            var res = new
             {
                 LicenseId = license.LicenseId,
                 LicenseCode = license.LicenseCode,
@@ -107,7 +107,7 @@ namespace MISA.QLTS.Infrasructure.Repository
 
             var count = 0;
 
-            for(int i = 0; i < licenseInsert.licenseDetails.Length; i++)
+            for (int i = 0; i < licenseInsert.licenseDetails.Length; i++)
             {
                 // Sinh Id không trùng cho licenseDetail
                 licenseInsert.licenseDetails[i].LicenseDetailId = Guid.NewGuid();
@@ -118,11 +118,11 @@ namespace MISA.QLTS.Infrasructure.Repository
                 parameter.Add("@LicenseId", licenseInsert.LicenseId);
                 parameter.Add("@LicenseDetailId", licenseInsert.licenseDetails[i].LicenseDetailId);
                 parameter.Add("@DetailJson", licenseInsert.licenseDetails[i].DetailJson);
-                var res =  _sqlConnection.Execute(sqlInsertDetail, parameter);
+                var res = _sqlConnection.Execute(sqlInsertDetail, parameter);
                 count += res;
             }
-            
-            
+
+
             var lastRes = new
             {
                 detail = count,
@@ -131,110 +131,73 @@ namespace MISA.QLTS.Infrasructure.Repository
             return lastRes;
         }
         /// <summary>
-        /// Sửa 1 bản ghi Json detail
+        /// Sửa 1 bản ghi master - detail
         /// </summary>
         /// <param name="licenseInsert"></param>
         /// <returns></returns>
-        public int UpdateLicenseDetail(Guid licenseDetailId, string detailJson)
+        public object UpdateLicenseInsert(LicenseInsert licenseInsert, Guid licenseId)
         {
-            var sqlUpdate = "UPDATE LicenseDetail SET DetailJson = @DetailJson WHERE LicenseDetailId = @LicenseDetailId";
             var parameter = new DynamicParameters();
-            parameter.Add("@DetailJson", detailJson);
-            parameter.Add("@LicenseDetailId", licenseDetailId);
-            var res = _sqlConnection.Execute(sqlUpdate, parameter);
-            return res; 
-        }
-        //public object UpdateLicenseInsert(LicenseInsert licenseInsert, Guid licenseId)
-        //{
-        //    var parameter = new DynamicParameters();
 
-        //    var sqlUpdateMaster = $"UPDATE License SET LicenseCode = @LicenseCode, UseDate = @UseDate, WriteUpdate = @WriteUpdate, " +
-        //        $"Description = @Description, Total = @Total WHERE LicenseId = @LicenseId";
-        //    parameter.Add("@LicenseId", licenseId);
-        //    parameter.Add("@LicenseCode", licenseInsert.LicenseCode);
-        //    parameter.Add("@UseDate", licenseInsert.UseDate);
-        //    parameter.Add("@WriteUpdate", licenseInsert.WriteUpdate);
-        //    parameter.Add("@Description", licenseInsert.Description);
-        //    parameter.Add("@Total", licenseInsert.Total);
-        //    // Sửa bán ghi license master
-        //    var masterRes = _sqlConnection.Execute(sqlUpdateMaster, parameter);
-
-        //    var sqlOldLicenseDetails = $"SELECT * FROM LicenseDetail WHERE LicenseId = @LicenseId";
-
-        //    var oldLicenseDetails = _sqlConnection.Query<LicenseDetail>(sqlOldLicenseDetails, parameter);
-        //    //  1 2 3 4 5 --- 1 2 3
-        //    // 1 2 3 4 5 --- 6 7 8 9 10
-        //    // Filter từ mảng cũ thành mảng mới vừa được push lên, thằng nào cũ có rồi thì để nguyên, chưa có thì xóa đi để push cái mới
-        //    for(int i = 0; i < oldLicenseDetails.Count(); i++)
-        //    {
-        //        var check = true;
-        //        for(int j = 0; j < licenseInsert.licenseDetails.Length; j++)
-        //        {
-        //            if (oldLicenseDetails.ElementAt(i).FixedAssetId.Equals(licenseInsert.licenseDetails[j].FixedAssetId) == true){
-        //                licenseInsert.licenseDetails = licenseInsert.licenseDetails.Where(val => val.FixedAssetId != licenseInsert.licenseDetails[j].FixedAssetId).ToArray();
-        //                check = false;
-        //                break;
-        //            }
-                    
-        //        }
-        //        if(check == true)
-        //        {
-        //            parameter.Add("@FixedAssetId", oldLicenseDetails.ElementAt(i).FixedAssetId);
-        //            var deleteOldDetail = $"DELETE FROM LicenseDetail WHERE LicenseId = @LicenseId AND FixedAssetId = @FixedAssetId";
-        //            var resDeleteOldDetail = _sqlConnection.Execute(deleteOldDetail, parameter);
-        //        }
-        //    }
-        //    var count = 0;
-        //    for (int i = 0; i < licenseInsert.licenseDetails.Length; i++)
-        //    {
-        //        // Sinh Id không trùng cho licenseDetail
-        //        licenseInsert.licenseDetails[i].LicenseDetailId = Guid.NewGuid();
-
-        //        var sqlInsertDetail = $"INSERT INTO LicenseDetail (LicenseDetailId, LicenseId, FixedAssetId, DetailJson) VALUES (@LicenseDetailId,@LicenseId,@FixedAssetId,@DetailJson)";
-
-        //        parameter.Add("@FixedAssetId", licenseInsert.licenseDetails[i].FixedAssetId);
-        //        parameter.Add("@LicenseId", licenseId);
-        //        parameter.Add("@LicenseDetailId", licenseInsert.licenseDetails[i].LicenseDetailId);
-        //        parameter.Add("@LicenseDetailId", licenseInsert.licenseDetails[i].DetailJson);
-        //        var res = _sqlConnection.Execute(sqlInsertDetail, parameter);
-        //        count += res;
-        //    }
-        //    return new
-        //    {
-        //        masterRes = masterRes,
-        //        detailRes = count
-        //    };
-        //}
-        /// <summary>
-        /// Lấy ra bộ phận sử dụng và detail json từ detail json
-        /// </summary>
-        /// <param name="licenseDetailId"></param>
-        /// <returns></returns>
-        public object GetMoneySource(Guid licenseDetailId)
-        {
-            var sqlGet = $"SELECT ld.DetailJson, fa.DepartmentName FROM LicenseDetail ld LEFT JOIN FixedAsset fa ON ld.FixedAssetId " +
-                $"= fa.FixedAssetId WHERE ld.LicenseDetailId = @LicenseDetailId";
-            var parameter = new DynamicParameters();
-            parameter.Add("@LicenseDetailId", licenseDetailId);
-            var res =  _sqlConnection.QueryFirstOrDefault<object>(sqlGet, parameter);
-            return res;
-        }
-        /// <summary>
-        /// Lấy ra 1 mảng detail từ 1 id bảng master
-        /// </summary>
-        /// <param name="licenseId"></param>
-        /// <returns></returns>
-        public List<object> GetDetailAssets(Guid licenseId)
-        {
-            var sqlCommand = "SELECT ld.LicenseDetailId, fa.FixedAssetId, fa.FixedAssetCode, fa.FixedAssetName, fa.DepartmentName,fa.Cost," +
-                " fa.DepreciationPerYear FROM License l LEFT JOIN LicenseDetail ld ON l.LicenseId = " +
-                "ld.LicenseId LEFT JOIN FixedAsset fa ON ld.FixedAssetId = fa.FixedAssetId" +
-                " WHERE l.LicenseId = @LicenseId ";
-            var parameter = new DynamicParameters();
+            var sqlUpdateMaster = $"UPDATE License SET LicenseCode = @LicenseCode, UseDate = @UseDate, WriteUpdate = @WriteUpdate, " +
+                $"Description = @Description, Total = @Total WHERE LicenseId = @LicenseId";
             parameter.Add("@LicenseId", licenseId);
-            var res = _sqlConnection.Query<object>(sqlCommand, parameter);
-            return res.ToList();
+            parameter.Add("@LicenseCode", licenseInsert.LicenseCode);
+            parameter.Add("@UseDate", licenseInsert.UseDate);
+            parameter.Add("@WriteUpdate", licenseInsert.WriteUpdate);
+            parameter.Add("@Description", licenseInsert.Description);
+            parameter.Add("@Total", licenseInsert.Total);
+            // Sửa bán ghi license master
+            var masterRes = _sqlConnection.Execute(sqlUpdateMaster, parameter);
+
+            var sqlOldLicenseDetails = $"SELECT * FROM LicenseDetail WHERE LicenseId = @LicenseId";
+
+            var oldLicenseDetails = _sqlConnection.Query<LicenseDetail>(sqlOldLicenseDetails, parameter);
+            //  1 2 3 4 5 --- 1 2 3
+            // 1 2 3 4 5 --- 6 7 8 9 10
+            // Filter từ mảng cũ thành mảng mới vừa được push lên, thằng nào cũ có rồi thì để nguyên, chưa có thì xóa đi để push cái mới
+            for (int i = 0; i < oldLicenseDetails.Count(); i++)
+            {
+                var check = true;
+                for (int j = 0; j < licenseInsert.licenseDetails.Length; j++)
+                {
+                    if (oldLicenseDetails.ElementAt(i).FixedAssetId.Equals(licenseInsert.licenseDetails[j].FixedAssetId) == true)
+                    {
+                        licenseInsert.licenseDetails = licenseInsert.licenseDetails.Where(val => val.FixedAssetId != licenseInsert.licenseDetails[j].FixedAssetId).ToArray();
+                        check = false;
+                        break;
+                    }
+
+                }
+                if (check == true)
+                {
+                    parameter.Add("@FixedAssetId", oldLicenseDetails.ElementAt(i).FixedAssetId);
+                    var deleteOldDetail = $"DELETE FROM LicenseDetail WHERE LicenseId = @LicenseId AND FixedAssetId = @FixedAssetId";
+                    var resDeleteOldDetail = _sqlConnection.Execute(deleteOldDetail, parameter);
+                }
+            }
+            var count = 0;
+            for (int i = 0; i < licenseInsert.licenseDetails.Length; i++)
+            {
+                // Sinh Id không trùng cho licenseDetail
+                licenseInsert.licenseDetails[i].LicenseDetailId = Guid.NewGuid();
+
+                var sqlInsertDetail = $"INSERT INTO LicenseDetail (LicenseDetailId, LicenseId, FixedAssetId, DetailJson) VALUES (@LicenseDetailId,@LicenseId,@FixedAssetId,@DetailJson)";
+
+                parameter.Add("@FixedAssetId", licenseInsert.licenseDetails[i].FixedAssetId);
+                parameter.Add("@LicenseId", licenseId);
+                parameter.Add("@LicenseDetailId", licenseInsert.licenseDetails[i].LicenseDetailId);
+                parameter.Add("@DetailJson", licenseInsert.licenseDetails[i].DetailJson);
+                var res = _sqlConnection.Execute(sqlInsertDetail, parameter);
+                count += res;
+            }
+            return new
+            {
+                masterRes = masterRes,
+                detailRes = count
+            };
         }
+
         
     }
 }

@@ -18,25 +18,13 @@ namespace MISA.QLTS.API.Controllers
             _licenseDetailRepository = licenseDetailRepository;
             _licenseDetailService = licenseDetailService;
         }
-        [HttpPost("multiData")]
-        public IActionResult PostMulti(LicenseInsert licenseInsert)
+        
+        [HttpGet("GetMoneySource/{licenseDetailId}")]
+        public IActionResult GetMoneySource(Guid licenseDetailId)
         {
             try
             {
-                var res = _licenseDetailService.Insert(licenseInsert);
-                return Ok(res);
-            } 
-            catch(Exception ex)
-            {
-                return HandleException(ex);
-            }
-        }
-        [HttpGet("getLicenseInsertById")]
-        public IActionResult GetLicenseInsertById(Guid licenseMasterId)
-        {
-            try
-            {
-                var res = _licenseDetailRepository.GetLicenseInsertById(licenseMasterId);
+                var res = _licenseDetailRepository.GetMoneySource(licenseDetailId);
                 return Ok(res);
             }
             catch(Exception ex)
@@ -44,17 +32,18 @@ namespace MISA.QLTS.API.Controllers
                 return HandleException(ex);
             }
         }
+        
         /// <summary>
-        /// Sửa bản thi master - detail
+        /// Sửa bản ghi master - detail
         /// </summary>
         /// <param name="licenseInsert"></param>
         /// <returns></returns>
-        [HttpPut("{licenseId}")]
-        public IActionResult UpdateLicenseInsert(LicenseInsert licenseInsert, Guid licenseId)
+        [HttpPut("{licenseDetailId}")]
+        public IActionResult UpdateLicenseDetail(Guid licenseDetailId, LicenseDetail licenseDetail)
         {
             try
             {
-                var res = _licenseDetailService.Update(licenseInsert, licenseId);
+                var res = _licenseDetailRepository.UpdateLicenseDetail(licenseDetailId, licenseDetail.DetailJson);
                 return StatusCode(201, res);
             }
             catch(Exception ex)
@@ -63,10 +52,11 @@ namespace MISA.QLTS.API.Controllers
             }
         }
         /// <summary>
-        /// Base xử lý exception nếu có
+        /// Lấy toàn bộ license detail theo license id của master
         /// </summary>
-        /// <param name="ex"></param>
+        /// <param name="licenseId"></param>
         /// <returns></returns>
+       
         [HttpGet("getDetailAssets")]
         public IActionResult GetDetailAssets(Guid licenseId)
         {
@@ -80,6 +70,24 @@ namespace MISA.QLTS.API.Controllers
                 return HandleException(ex);
             }
         }
+        //[HttpGet("{licenseDetailId}")]
+        //public IActionResult GetDetailJsonById(Guid licenseDetailId)
+        //{
+        //    try
+        //    {
+        //        var res = _licenseDetailRepository.GetDetailJsonById(licenseDetailId);
+        //        return Ok(res);
+        //    }
+        //    catch(Exception ex)
+        //    {
+        //        return HandleException(ex);
+        //    }
+        //}
+        /// <summary>
+        /// Base xử lý exception nếu có
+        /// </summary>
+        /// <param name="ex"></param>
+        /// <returns></returns>
         private IActionResult HandleException(Exception ex)
         {
             var res = new

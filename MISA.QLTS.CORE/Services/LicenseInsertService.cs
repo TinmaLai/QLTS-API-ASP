@@ -11,12 +11,12 @@ using System.Threading.Tasks;
 
 namespace MISA.QLTS.CORE.Services
 {
-    public class LicenseDetailService:BaseService<LicenseDetail>, ILicenseDetailService
+    public class LicenseInsertService: BaseService<LicenseInsert>, ILicenseInsertService
     {
-        ILicenseDetailRepository _licenseDetailRepository;
-        public LicenseDetailService(ILicenseDetailRepository licenseDetailRepository) : base(licenseDetailRepository)
+        ILicenseInsertRepository _licenseInsertRepository;
+        public LicenseInsertService(ILicenseInsertRepository licenseInsertRepository) : base(licenseInsertRepository)
         {
-            _licenseDetailRepository = licenseDetailRepository;
+            _licenseInsertRepository = licenseInsertRepository;
         }
         /// <summary>
         /// Hàm insert nhưng check validate
@@ -32,7 +32,7 @@ namespace MISA.QLTS.CORE.Services
             var isValid = ValidateObject(licenseInsert, mode);
             if (isValid == true && (ValidateErrorMsgs == null || ValidateErrorMsgs.Count() == 0))
             {
-                return _licenseDetailRepository.MultiInsert(licenseInsert);
+                return _licenseInsertRepository.MultiInsert(licenseInsert);
 
             }
             else
@@ -53,37 +53,37 @@ namespace MISA.QLTS.CORE.Services
         /// <param name="licenseId"></param>
         /// <returns></returns>
         /// <exception cref="MISAValidateException"></exception>
-        //public object Update(LicenseInsert licenseInsert, Guid licenseId)
-        //{
-        //    int mode = 0;
-        //    // Lấy toàn bộ thuộc tính của đối tượng
-        //    var properties = typeof(LicenseInsert).GetProperties();
-        //    foreach (var prop in properties)
-        //    {
-        //        // Kiểu dữ liệu của prop
-        //        var propType = prop.PropertyType;
-        //        var isPrimaryKey = prop.IsDefined(typeof(PrimaryKey), true);
-        //        if (isPrimaryKey == true)
-        //        {
-        //            // Set id từ url vào id của entity 
-        //            prop.SetValue(licenseInsert, licenseId);
-        //        }
-        //    }
-        //    // Thực hiện sửa dữ liệu
-        //    var isValid = ValidateObject(licenseInsert, mode);
-        //    if (isValid == true && (ValidateErrorMsgs == null || ValidateErrorMsgs.Count() == 0))
-        //    {
-        //        return _licenseDetailRepository.UpdateLicenseInsert(licenseInsert, licenseId);
+        public object Update(LicenseInsert licenseInsert, Guid licenseId)
+        {
+            int mode = 0;
+            // Lấy toàn bộ thuộc tính của đối tượng
+            var properties = typeof(LicenseInsert).GetProperties();
+            foreach (var prop in properties)
+            {
+                // Kiểu dữ liệu của prop
+                var propType = prop.PropertyType;
+                var isPrimaryKey = prop.IsDefined(typeof(PrimaryKey), true);
+                if (isPrimaryKey == true)
+                {
+                    // Set id từ url vào id của entity 
+                    prop.SetValue(licenseInsert, licenseId);
+                }
+            }
+            // Thực hiện sửa dữ liệu
+            var isValid = ValidateObject(licenseInsert, mode);
+            if (isValid == true && (ValidateErrorMsgs == null || ValidateErrorMsgs.Count() == 0))
+            {
+                return _licenseInsertRepository.UpdateLicenseInsert(licenseInsert, licenseId);
 
-        //    }
-        //    else
-        //    {
-        //        var errorService = new ErrorService();
-        //        errorService.UserMsg = Resources.ResourceVN.Error_Validate;
-        //        errorService.Data = ValidateErrorMsgs;
-        //        throw new MISAValidateException(Resources.ResourceVN.Error_Validate, ValidateErrorMsgs);
-        //    }
-        //}
+            }
+            else
+            {
+                var errorService = new ErrorService();
+                errorService.UserMsg = Resources.ResourceVN.Error_Validate;
+                errorService.Data = ValidateErrorMsgs;
+                throw new MISAValidateException(Resources.ResourceVN.Error_Validate, ValidateErrorMsgs);
+            }
+        }
         /// <summary>
         /// validate chung
         /// </summary>
@@ -95,6 +95,8 @@ namespace MISA.QLTS.CORE.Services
         {
             var isValid = true;
             var propId = Guid.NewGuid();
+            var UseDateValue = new DateTime();
+            var WriteUpdateValue = new DateTime();
             // Lấy toàn bộ thuộc tính của đối tượng
             var properties = typeof(LicenseInsert).GetProperties();
             foreach (var prop in properties)
@@ -104,6 +106,16 @@ namespace MISA.QLTS.CORE.Services
                 var propName = prop.Name;
                 // Lấy tên gọi được của prop (VD: Tên tài sản, Mã tài sản, ...)
                 var propFriendlyName = propName;
+                // lấy ra giá trị ngày sử dụng, ngày ghi tăng
+                if(propName.Equals("UseDate"))
+                {
+                    UseDateValue = (DateTime)prop.GetValue(entity);
+                }
+                if (propName.Equals("WriteUpdate"))
+                {
+                    WriteUpdateValue = (DateTime)prop.GetValue(entity);
+                }
+                
                 // Lấy giá trị thêm vào
                 var propValue = prop.GetValue(entity);
                 // kiểm tra prop có phải khóa chính không
@@ -132,7 +144,7 @@ namespace MISA.QLTS.CORE.Services
                 var isNotDuplicate = prop.IsDefined(typeof(NotDuplicate), true);
                 if (isNotDuplicate == true)
                 {
-                    var isDup = _licenseDetailRepository.CheckCodeDuplicate(propId, propValue.ToString(), mode);
+                    var isDup = _licenseInsertRepository.CheckCodeDuplicate(propId, propValue.ToString(), mode);
                     if (isDup == true)
                     {
                         isValid = false;
@@ -155,9 +167,10 @@ namespace MISA.QLTS.CORE.Services
                 }
 
             }
+            
             return isValid;
 
-            
+
         }
     }
 }

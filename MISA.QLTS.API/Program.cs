@@ -24,6 +24,8 @@ builder.Services.AddScoped<ILicenseRepository, LicenseRepository>();
 builder.Services.AddScoped<ILicenseService, LicenseService>();
 builder.Services.AddScoped<ILicenseDetailRepository, LicenseDetailRepository>();
 builder.Services.AddScoped<ILicenseDetailService, LicenseDetailService>();
+builder.Services.AddScoped<ILicenseInsertRepository, LicenseInsertRepository>();
+builder.Services.AddScoped<ILicenseInsertService, LicenseInsertService>();
 
 builder.Services.AddScoped(typeof(IBaseRepository<>), typeof(BaseRepository<>));
 builder.Services.AddScoped(typeof(IBaseService<>), typeof(BaseService<>));

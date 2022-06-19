@@ -7,7 +7,7 @@ using System.Threading.Tasks;
 
 namespace MISA.QLTS.CORE.Interfaces.Repositories
 {
-    public interface ILicenseDetailRepository:IBaseRepository<LicenseDetail>
+    public interface ILicenseInsertRepository: IBaseRepository<LicenseInsert>
     {
         /// <summary>
         /// Thêm 1 mảng license detail
@@ -22,24 +22,10 @@ namespace MISA.QLTS.CORE.Interfaces.Repositories
         /// <returns></returns>
         object GetLicenseInsertById(Guid licenseId);
         /// <summary>
-        /// Lấy ra list detail từ 1 licenseId
-        /// </summary>
-        /// <param name="licenseId"></param>
-        /// <returns></returns>
-        List<object> GetDetailAssets(Guid licenseId);
-        /// <summary>
-        /// Sửa bản license detail
+        /// Sửa bản ghi master - detail
         /// </summary>
         /// <param name="licenseInsert"></param>
         /// <returns></returns>
-        int UpdateLicenseDetail(Guid licenseDetailId, string detailJson);
-        /// <summary>
-        /// Lấy ra bộ phận sử dụng và detail json của license detail
-        /// </summary>
-        /// <param name="licenseDetailId"></param>
-        /// <returns></returns>
-        object GetMoneySource(Guid licenseDetailId);
-
-
+        object UpdateLicenseInsert(LicenseInsert licenseInsert, Guid licenseId);
     }
 }

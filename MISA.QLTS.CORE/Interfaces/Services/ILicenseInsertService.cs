@@ -7,7 +7,7 @@ using System.Threading.Tasks;
 
 namespace MISA.QLTS.CORE.Interfaces.Services
 {
-    public interface ILicenseDetailService: IBaseService<LicenseDetail>
+    public interface ILicenseInsertService: IBaseService<LicenseInsert>
     {
         /// <summary>
         /// Hàm insert license
@@ -21,6 +21,6 @@ namespace MISA.QLTS.CORE.Interfaces.Services
         /// <param name="licenseInsert"></param>
         /// <param name="licenseId"></param>
         /// <returns></returns>
-        //object Update(LicenseInsert licenseInsert, Guid licenseId);
+        object Update(LicenseInsert licenseInsert, Guid licenseId);
     }
 }
