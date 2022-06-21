@@ -21,5 +21,11 @@ namespace MISA.QLTS.CORE.Interfaces.Services
             List<FixedAsset> list = new List<FixedAsset>();
             return list;
         }
+        /// <summary>
+        /// Service xóa
+        /// </summary>
+        /// <param name="ids"></param>
+        /// <returns></returns>
+        object DeleteService(Guid[] ids);
     }
 }

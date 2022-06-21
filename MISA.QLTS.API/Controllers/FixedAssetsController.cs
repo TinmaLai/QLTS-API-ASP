@@ -125,7 +125,8 @@ namespace MISA.QLTS.API.Controllers
         {
             try
             {
-                var res = _fixedAssetRepository.MultiDelete(ids);
+                //var res = _fixedAssetRepository.MultiDelete(ids);
+                var res = _fixedAssetService.DeleteService(ids);
                 return Ok(res);
             }
             catch(Exception ex)

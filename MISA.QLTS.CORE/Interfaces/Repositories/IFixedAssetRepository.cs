@@ -38,5 +38,11 @@ namespace MISA.QLTS.CORE.Interfaces.Repositories
         /// <param name="ids"></param>
         /// <returns>Danh sách tài sản còn lại để thêm vào chứng từ</returns>
         object GetLicenseAssets(Guid[] ids, string? filterContent, int? pageSize, int? pageNumber);
+        /// <summary>
+        /// Check tài sản phát sinh chứng từ
+        /// </summary>
+        /// <param name="ids"></param>
+        /// <returns></returns>
+        public object CheckForeignLicense(Guid[] ids);
     }
 }

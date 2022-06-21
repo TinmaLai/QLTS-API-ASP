@@ -142,5 +142,32 @@ namespace MISA.QLTS.CORE.Services
             }
             return dateReturn;
         }
+        /// <summary>
+        /// Service cho xóa bản ghi tài sản
+        /// </summary>
+        /// <param name="ids"></param>
+        /// <returns></returns>
+        public object DeleteService(Guid[] ids)
+        {
+            var isValid = CheckForeignLicense(ids); 
+            if(isValid == null)
+            {
+                var res = _fixedAssetRepository.MultiDelete(ids);
+                return res;
+            }
+            else return isValid;
+
+
+        }
+        /// <summary>
+        /// Check mã tài sản đã được dùng để phát sinh chứng từ hay chưa
+        /// </summary>
+        /// <param name="id"></param>
+        /// <returns></returns>
+        public object CheckForeignLicense(Guid[] ids)
+        {
+            var resCheck = _fixedAssetRepository.CheckForeignLicense(ids);
+            return resCheck;
+        }
     }
 }

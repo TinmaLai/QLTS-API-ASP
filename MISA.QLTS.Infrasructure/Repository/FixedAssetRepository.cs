@@ -24,6 +24,36 @@ namespace MISA.QLTS.Infrasructure.Repository
             _sqlConnection = new MySqlConnection(_connectionString);
         }
         /// <summary>
+        /// Hàm check xem tài sản đã phát sinh chứng từ hay chưa
+        /// </summary>
+        /// <param name="ids"></param>
+        /// <returns></returns>
+        public object CheckForeignLicense(Guid[] ids)
+        {
+            var parameter = new DynamicParameters();
+            for(int i = 0; i < ids.Length; i++)
+            {
+                parameter.Add("@id", ids[i]);
+                var sqlCheckForeign = "SELECT l.LicenseCode, fa.FixedAssetCode " +
+                    "FROM LicenseDetail ld " +
+                    "JOIN FixedAsset fa ON ld.FixedAssetId = fa.FixedAssetID " +
+                    "JOIN License l " +
+                    "ON l.LicenseId = ld.LicenseId " +
+                    "WHERE ld.FixedAssetID = @id";
+                var resCheck = _sqlConnection.QueryFirstOrDefault<object>(sqlCheckForeign, parameter);
+                if (resCheck != null)
+                {
+                    return new
+                    {
+                        resCheck = resCheck,
+                        typeErr = 3
+                    };
+                }
+            }
+            return null;
+            
+        }
+        /// <summary>
         /// Check 1 kí tự có phải là số hay không
         /// </summary>
         /// <param name="pText"></param>
