@@ -14,7 +14,7 @@ namespace MISA.QLTS.CORE.Interfaces.Repositories
         /// </summary>
         /// <param name="licenseDetails"></param>
         /// <returns></returns>
-        object MultiInsert(LicenseInsert licenseInsert);
+        object MultiInsert(LicenseDetail[] licenseDetails, Guid licenseId);
         /// <summary>
         /// Lấy ra 1 licenseInsert, vừa chứa master, vừa chứa detail
         /// </summary>

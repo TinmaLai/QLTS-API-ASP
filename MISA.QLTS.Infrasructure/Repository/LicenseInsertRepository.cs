@@ -14,6 +14,9 @@ namespace MISA.QLTS.Infrasructure.Repository
     public class LicenseInsertRepository: BaseRepository<LicenseInsert>, ILicenseInsertRepository
     {
         IConfiguration _configuration;
+        ILicenseRepository _licenseRepository;
+        ILicenseDetailRepository _licenseDetailRepository;
+
         readonly string _connectionString = string.Empty;
         protected MySqlConnection _sqlConnection;
         public LicenseInsertRepository(IConfiguration configuration) : base(configuration)

@@ -17,5 +17,11 @@ namespace MISA.QLTS.CORE.Interfaces.Repositories
         /// <param name="pageNumber"></param>
         /// <returns></returns>
         object Filter(string? filterContent, int? pageSize, int? pageNumber);
+        /// <summary>
+        /// Xóa nhiều bản ghi
+        /// </summary>
+        /// <param name="ids">Mảng id được xóa</param>
+        /// <returns></returns>
+        public int MultiDelete(Guid[] ids);
     }
 }

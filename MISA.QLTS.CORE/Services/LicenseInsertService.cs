@@ -14,9 +14,14 @@ namespace MISA.QLTS.CORE.Services
     public class LicenseInsertService: BaseService<LicenseInsert>, ILicenseInsertService
     {
         ILicenseInsertRepository _licenseInsertRepository;
-        public LicenseInsertService(ILicenseInsertRepository licenseInsertRepository) : base(licenseInsertRepository)
+        ILicenseService _licenseService;
+        ILicenseDetailRepository _licenseDetailRepository;
+
+        public LicenseInsertService(ILicenseInsertRepository licenseInsertRepository, ILicenseService licenseService, ILicenseDetailRepository licenseDetailRepository) : base(licenseInsertRepository)
         {
             _licenseInsertRepository = licenseInsertRepository;
+            _licenseService = licenseService;
+            _licenseDetailRepository = licenseDetailRepository;
         }
         /// <summary>
         /// Hàm insert nhưng check validate
@@ -29,11 +34,28 @@ namespace MISA.QLTS.CORE.Services
             int mode = 1;
             // Thực hiện thêm mới dữ liệu
             // Thực hiện validate trước khi thêm
+            //var isValid = ValidateObject(licenseInsert, mode);
             var isValid = ValidateObject(licenseInsert, mode);
+            licenseInsert.LicenseId = Guid.NewGuid();
+            var license = new License
+            {
+                LicenseId = licenseInsert.LicenseId,
+                LicenseCode = licenseInsert.LicenseCode,
+                UseDate = licenseInsert.UseDate,
+                WriteUpdate = licenseInsert.WriteUpdate,
+                Total = licenseInsert.Total,
+                Description = licenseInsert.Description
+            };
+            
             if (isValid == true && (ValidateErrorMsgs == null || ValidateErrorMsgs.Count() == 0))
             {
-                return _licenseInsertRepository.MultiInsert(licenseInsert);
-
+                var licenseCount = _licenseService.Insert(license);
+                var licenseDetailCount = _licenseDetailRepository.MultiInsert(licenseInsert.licenseDetails, licenseInsert.LicenseId);
+                return new
+                {
+                    masterRes = licenseCount,
+                    detailRes = licenseDetailCount
+                };
             }
             else
             {
@@ -43,6 +65,7 @@ namespace MISA.QLTS.CORE.Services
                 errorService.Data = ValidateErrorMsgs;
                 throw new MISAValidateException(Resources.ResourceVN.Error_Validate, ValidateErrorMsgs);
             }
+            
 
 
         }
@@ -107,7 +130,7 @@ namespace MISA.QLTS.CORE.Services
                 // Lấy tên gọi được của prop (VD: Tên tài sản, Mã tài sản, ...)
                 var propFriendlyName = propName;
                 // lấy ra giá trị ngày sử dụng, ngày ghi tăng
-                if(propName.Equals("UseDate"))
+                if(propName.Equals("UseDate")) 
                 {
                     UseDateValue = (DateTime)prop.GetValue(entity);
                 }
@@ -148,7 +171,7 @@ namespace MISA.QLTS.CORE.Services
                     if (isDup == true)
                     {
                         isValid = false;
-                        ValidateErrorMsgs.Add($"Thông tin {propFriendlyName} không được phép trùng");
+                        ValidateErrorMsgs.Add($"Thông tin {propFriendlyName} không được phép trùng, 1");
                     }
                     else isValid = true;
                 }
@@ -157,7 +180,7 @@ namespace MISA.QLTS.CORE.Services
                 if (isMaxLength)
                 {
                     // Lấy ra maxLength
-                    var maxLength = (prop.GetCustomAttributes(typeof(MaxLength), true)[0] as MaxLength).Length;
+                    var maxLength = (prop?.GetCustomAttributes(typeof(MaxLength), true)[0] as MaxLength)?.Length;
                     // Kiểm tra xem độ dài của value có lớn hơn giá trị maxLength không
                     if (propValue.ToString().Length > maxLength)
                     {
@@ -167,7 +190,12 @@ namespace MISA.QLTS.CORE.Services
                 }
 
             }
-            
+            var compareDate = DateTime.Compare(UseDateValue, WriteUpdateValue);
+            if (compareDate > 0)
+            {
+                ValidateErrorMsgs.Add($"Ngày ghi tăng không được sớm hơn ngày sử dụng., 2");
+                isValid = false;
+            }
             return isValid;
 
 

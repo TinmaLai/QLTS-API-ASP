@@ -1,4 +1,5 @@
-﻿using System;
+﻿using MISA.QLTS.CORE.MISAAttribute;
+using System;
 using System.Collections.Generic;
 using System.Linq;
 using System.Text;
@@ -11,6 +12,7 @@ namespace MISA.QLTS.CORE.Entities
         /// <summary>
         /// Id 
         /// </summary>
+        [PrimaryKey]
         public Guid LicenseDetailId { get; set; }
         /// <summary>
         /// Khóa ngoại Id của bảng Licnese (chứng từ)

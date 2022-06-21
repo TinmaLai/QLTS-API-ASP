@@ -24,28 +24,28 @@ namespace MISA.QLTS.CORE.Services
         /// <param name="entity"></param>
         /// <returns></returns>
         /// <exception cref="MISAValidateException"></exception>
-        public object Insert(LicenseInsert licenseInsert)
-        {
-            int mode = 1;
-            // Thực hiện thêm mới dữ liệu
-            // Thực hiện validate trước khi thêm
-            var isValid = ValidateObject(licenseInsert, mode);
-            if (isValid == true && (ValidateErrorMsgs == null || ValidateErrorMsgs.Count() == 0))
-            {
-                return _licenseDetailRepository.MultiInsert(licenseInsert);
+        //public object Insert(LicenseInsert licenseInsert)
+        //{
+        //    int mode = 1;
+        //    // Thực hiện thêm mới dữ liệu
+        //    // Thực hiện validate trước khi thêm
+        //    var isValid = ValidateObject(licenseInsert, mode);
+        //    if (isValid == true && (ValidateErrorMsgs == null || ValidateErrorMsgs.Count() == 0))
+        //    {
+        //        return _licenseDetailRepository.MultiInsert(licenseInsert);
 
-            }
-            else
-            {
-                // Xử lý lỗi khi Validate có lỗi xảy ra
-                var errorService = new ErrorService();
-                errorService.UserMsg = Resources.ResourceVN.Error_Validate;
-                errorService.Data = ValidateErrorMsgs;
-                throw new MISAValidateException(Resources.ResourceVN.Error_Validate, ValidateErrorMsgs);
-            }
+        //    }
+        //    else
+        //    {
+        //        // Xử lý lỗi khi Validate có lỗi xảy ra
+        //        var errorService = new ErrorService();
+        //        errorService.UserMsg = Resources.ResourceVN.Error_Validate;
+        //        errorService.Data = ValidateErrorMsgs;
+        //        throw new MISAValidateException(Resources.ResourceVN.Error_Validate, ValidateErrorMsgs);
+        //    }
 
 
-        }
+        //}
         /// <summary>
         /// Sửa bản ghi master - detail
         /// </summary>

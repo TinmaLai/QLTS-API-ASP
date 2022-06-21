@@ -89,47 +89,65 @@ namespace MISA.QLTS.Infrasructure.Repository
         /// <summary>
         /// Thêm mảng license detail
         /// </summary>
-        public object MultiInsert(LicenseInsert licenseInsert)
+        public object MultiInsert(LicenseDetail[] licenseDetails, Guid licenseId)
         {
-            //License license = new License();
-            var parameter = new DynamicParameters();
-            licenseInsert.LicenseId = Guid.NewGuid();
-
-            var sqlInsertMaster = $"INSERT INTO License (LicenseId, LicenseCode, UseDate, WriteUpdate, Description, Total) VALUES " +
-                "(@LicenseId, @LicenseCode, @UseDate, @WriteUpdate, @Description, @Total)";
-            parameter.Add("@LicenseId", licenseInsert.LicenseId);
-            parameter.Add("@LicenseCode", licenseInsert.LicenseCode);
-            parameter.Add("@UseDate", licenseInsert.UseDate);
-            parameter.Add("@WriteUpdate", licenseInsert.WriteUpdate);
-            parameter.Add("@Description", licenseInsert.Description);
-            parameter.Add("@Total", licenseInsert.Total);
-            var masterRes = _sqlConnection.Execute(sqlInsertMaster, parameter);
+            
 
             var count = 0;
 
-            for(int i = 0; i < licenseInsert.licenseDetails.Length; i++)
+            for (int i = 0; i < licenseDetails.Length;  i++)
             {
-                // Sinh Id không trùng cho licenseDetail
-                licenseInsert.licenseDetails[i].LicenseDetailId = Guid.NewGuid();
+                licenseDetails[i].LicenseId = licenseId;
+                licenseDetails[i].LicenseDetailId = Guid.NewGuid();
+                int res = Insert(licenseDetails[i]);
 
-                var sqlInsertDetail = $"INSERT INTO LicenseDetail (LicenseDetailId, LicenseId, FixedAssetId, DetailJson) VALUES (@LicenseDetailId,@LicenseId,@FixedAssetId,@DetailJson)";
-
-                parameter.Add("@FixedAssetId", licenseInsert.licenseDetails[i].FixedAssetId);
-                parameter.Add("@LicenseId", licenseInsert.LicenseId);
-                parameter.Add("@LicenseDetailId", licenseInsert.licenseDetails[i].LicenseDetailId);
-                parameter.Add("@DetailJson", licenseInsert.licenseDetails[i].DetailJson);
-                var res =  _sqlConnection.Execute(sqlInsertDetail, parameter);
                 count += res;
+                // Sinh Id không trùng cho licenseDetail
             }
-            
-            
-            var lastRes = new
-            {
-                detail = count,
-                masterRes = masterRes
-            };
-            return lastRes;
+
+            return count;
         }
+        //public object MultiInsert(LicenseInsert licenseInsert)
+        //{
+        //    //License license = new License();
+        //    var parameter = new DynamicParameters();
+        //    licenseInsert.LicenseId = Guid.NewGuid();
+
+        //    var sqlInsertMaster = $"INSERT INTO License (LicenseId, LicenseCode, UseDate, WriteUpdate, Description, Total) VALUES " +
+        //        "(@LicenseId, @LicenseCode, @UseDate, @WriteUpdate, @Description, @Total)";
+        //    parameter.Add("@LicenseId", licenseInsert.LicenseId);
+        //    parameter.Add("@LicenseCode", licenseInsert.LicenseCode);
+        //    parameter.Add("@UseDate", licenseInsert.UseDate);
+        //    parameter.Add("@WriteUpdate", licenseInsert.WriteUpdate);
+        //    parameter.Add("@Description", licenseInsert.Description);
+        //    parameter.Add("@Total", licenseInsert.Total);
+        //    var masterRes = _sqlConnection.Execute(sqlInsertMaster, parameter);
+
+        //    var count = 0;
+
+        //    for(int i = 0; i < licenseInsert.licenseDetails.Length; i++)
+        //    {
+        //        // Sinh Id không trùng cho licenseDetail
+        //        licenseInsert.licenseDetails[i].LicenseDetailId = Guid.NewGuid();
+
+        //        var sqlInsertDetail = $"INSERT INTO LicenseDetail (LicenseDetailId, LicenseId, FixedAssetId, DetailJson) VALUES (@LicenseDetailId,@LicenseId,@FixedAssetId,@DetailJson)";
+
+        //        parameter.Add("@FixedAssetId", licenseInsert.licenseDetails[i].FixedAssetId);
+        //        parameter.Add("@LicenseId", licenseInsert.LicenseId);
+        //        parameter.Add("@LicenseDetailId", licenseInsert.licenseDetails[i].LicenseDetailId);
+        //        parameter.Add("@DetailJson", licenseInsert.licenseDetails[i].DetailJson);
+        //        var res =  _sqlConnection.Execute(sqlInsertDetail, parameter);
+        //        count += res;
+        //    }
+
+
+        //    var lastRes = new
+        //    {
+        //        detail = count,
+        //        masterRes = masterRes
+        //    };
+        //    return lastRes;
+        //}
         /// <summary>
         /// Sửa 1 bản ghi Json detail
         /// </summary>

@@ -247,7 +247,7 @@ namespace MISA.QLTS.Infrasructure.Repository
                     continue;
                 }
                 var isPrimaryKey = prop.IsDefined(typeof(PrimaryKey), true);
-                if(isPrimaryKey == true && propType == typeof(Guid))
+                if(isPrimaryKey == true && propType == typeof(Guid) && (Guid)propValue == Guid.Empty)
                 {
                     prop.SetValue(entity, Guid.NewGuid());
                 }
@@ -308,7 +308,20 @@ namespace MISA.QLTS.Infrasructure.Repository
             var rowBeAffects = _sqlConnection.Execute(sqlCommand, param: entity);
             return rowBeAffects;
         }
+        /// <summary>
+        /// Thực hiện xóa nhiều bản ghi theo mảng id truyền vào
+        /// </summary>
+        /// <param name="ids">Id các bản ghi muốn xóa</param>
+        /// <returns>Số bản ghi được xóa</returns>
+        public int MultiDelete(Guid[] ids)
+        {
+            var parameter = new DynamicParameters();
+            parameter.Add("@ids", ids);
+            // Câu lệnh sql thực hiện xóa nhiều
+            var sqlCommand = $"DELETE FROM {_tableName} WHERE {_tableName}Id IN @ids ";
+            var res = _sqlConnection.Execute(sqlCommand, parameter);
+            return res;
+        }
 
-        
     }
 }

@@ -76,6 +76,24 @@ namespace MISA.QLTS.API.Controllers
             }
         }
         /// <summary>
+        /// Xóa nhiều bản ghi
+        /// </summary>
+        /// <param name="ids">Mảng id được xóa</param>
+        /// <returns></returns>
+        [HttpDelete("multiDelete")]
+        public IActionResult MultiDelete(Guid[] ids)
+        {
+            try
+            {
+                var res = _licenseRepository.MultiDelete(ids);
+                return Ok(res);
+            }
+            catch (Exception ex)
+            {
+                return HandleException(ex);
+            }
+        }
+        /// <summary>
         /// Xử lý khi có lỗi
         /// </summary>
         /// <param name="ex"></param>

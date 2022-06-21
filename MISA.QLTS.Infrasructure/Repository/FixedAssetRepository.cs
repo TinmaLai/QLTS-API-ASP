@@ -135,26 +135,7 @@ namespace MISA.QLTS.Infrasructure.Repository
             }
             return fixedAssets;
         }
-        /// <summary>
-        /// Thực hiện xóa nhiều bản ghi theo mảng id truyền vào
-        /// </summary>
-        /// <param name="ids">Id các bản ghi muốn xóa</param>
-        /// <returns>Số bản ghi được xóa</returns>
-        public int MultiDelete(Guid[] ids)
-        {
-            
-            var stringDelete = "";
-            // Thêm các id vào chuỗi sql
-            foreach(var id in ids)
-            {
-                stringDelete += "'" + id + "',";
-            }
-            stringDelete = stringDelete.Remove(stringDelete.Length - 1,1);
-            // Câu lệnh sql thực hiện xóa nhiều
-            var sqlCommand = $"DELETE FROM FixedAsset WHERE FixedAssetId IN ({stringDelete})";
-            var res = _sqlConnection.Execute(sqlCommand);
-            return res;
-        }
+        
         /// <summary>
         /// Hàm thực hiện tìm kiếm theo tham số truyền vào
         /// </summary>
