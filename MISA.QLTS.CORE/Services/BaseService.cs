@@ -108,9 +108,9 @@ namespace MISA.QLTS.CORE.Services
                 if (isMaxLength)
                 {
                     // Lấy ra maxLength
-                    var maxLength = (prop.GetCustomAttributes(typeof(MaxLength), true)[0] as MaxLength).Length;
+                    var maxLength = (prop.GetCustomAttributes(typeof(MaxLength), true)[0] as MaxLength)?.Length;
                     // Kiểm tra xem độ dài của value có lớn hơn giá trị maxLength không
-                    if (propValue.ToString().Length > maxLength)
+                    if (propValue?.ToString().Length > maxLength)
                     {
                         isValid = false;
                         ValidateErrorMsgs.Add(string.Format(Resources.ResourceVN.ErrorValidate_PropertyMaxLength, propFriendlyName, maxLength));

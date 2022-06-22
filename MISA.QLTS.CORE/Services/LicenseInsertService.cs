@@ -93,6 +93,7 @@ namespace MISA.QLTS.CORE.Services
                 }
             }
             // Thực hiện sửa dữ liệu
+            // true là không lỗi (trùng, ngày), false thì sai văng exception
             var isValid = ValidateObject(licenseInsert, mode);
             if (isValid == true && (ValidateErrorMsgs == null || ValidateErrorMsgs.Count() == 0))
             {

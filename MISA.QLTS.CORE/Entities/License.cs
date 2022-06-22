@@ -19,11 +19,13 @@ namespace MISA.QLTS.CORE.Entities
         /// </summary>
         [IsNotNullOrEmpty]
         [NotDuplicate]
+        [MaxLength(50)]
         public string LicenseCode { get; set; }
         /// <summary>
         /// Ngày bắt đầu sử dụng
         /// </summary>
         [IsNotNullOrEmpty]
+        
         public DateTime UseDate { get; set; }
         /// <summary>
         /// Ngày ghi tăng
@@ -33,6 +35,7 @@ namespace MISA.QLTS.CORE.Entities
         /// <summary>
         /// Ghi chú
         /// </summary>
+        [MaxLength(500)]
         public string? Description { get; set; }
         /// <summary>
         /// Tổng nguyên giá
