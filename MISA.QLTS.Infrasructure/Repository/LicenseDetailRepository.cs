@@ -107,47 +107,7 @@ namespace MISA.QLTS.Infrasructure.Repository
 
             return count;
         }
-        //public object MultiInsert(LicenseInsert licenseInsert)
-        //{
-        //    //License license = new License();
-        //    var parameter = new DynamicParameters();
-        //    licenseInsert.LicenseId = Guid.NewGuid();
-
-        //    var sqlInsertMaster = $"INSERT INTO License (LicenseId, LicenseCode, UseDate, WriteUpdate, Description, Total) VALUES " +
-        //        "(@LicenseId, @LicenseCode, @UseDate, @WriteUpdate, @Description, @Total)";
-        //    parameter.Add("@LicenseId", licenseInsert.LicenseId);
-        //    parameter.Add("@LicenseCode", licenseInsert.LicenseCode);
-        //    parameter.Add("@UseDate", licenseInsert.UseDate);
-        //    parameter.Add("@WriteUpdate", licenseInsert.WriteUpdate);
-        //    parameter.Add("@Description", licenseInsert.Description);
-        //    parameter.Add("@Total", licenseInsert.Total);
-        //    var masterRes = _sqlConnection.Execute(sqlInsertMaster, parameter);
-
-        //    var count = 0;
-
-        //    for(int i = 0; i < licenseInsert.licenseDetails.Length; i++)
-        //    {
-        //        // Sinh Id không trùng cho licenseDetail
-        //        licenseInsert.licenseDetails[i].LicenseDetailId = Guid.NewGuid();
-
-        //        var sqlInsertDetail = $"INSERT INTO LicenseDetail (LicenseDetailId, LicenseId, FixedAssetId, DetailJson) VALUES (@LicenseDetailId,@LicenseId,@FixedAssetId,@DetailJson)";
-
-        //        parameter.Add("@FixedAssetId", licenseInsert.licenseDetails[i].FixedAssetId);
-        //        parameter.Add("@LicenseId", licenseInsert.LicenseId);
-        //        parameter.Add("@LicenseDetailId", licenseInsert.licenseDetails[i].LicenseDetailId);
-        //        parameter.Add("@DetailJson", licenseInsert.licenseDetails[i].DetailJson);
-        //        var res =  _sqlConnection.Execute(sqlInsertDetail, parameter);
-        //        count += res;
-        //    }
-
-
-        //    var lastRes = new
-        //    {
-        //        detail = count,
-        //        masterRes = masterRes
-        //    };
-        //    return lastRes;
-        //}
+        
         /// <summary>
         /// Sửa 1 bản ghi Json detail
         /// </summary>
@@ -162,67 +122,7 @@ namespace MISA.QLTS.Infrasructure.Repository
             var res = _sqlConnection.Execute(sqlUpdate, parameter);
             return res; 
         }
-        //public object UpdateLicenseInsert(LicenseInsert licenseInsert, Guid licenseId)
-        //{
-        //    var parameter = new DynamicParameters();
-
-        //    var sqlUpdateMaster = $"UPDATE License SET LicenseCode = @LicenseCode, UseDate = @UseDate, WriteUpdate = @WriteUpdate, " +
-        //        $"Description = @Description, Total = @Total WHERE LicenseId = @LicenseId";
-        //    parameter.Add("@LicenseId", licenseId);
-        //    parameter.Add("@LicenseCode", licenseInsert.LicenseCode);
-        //    parameter.Add("@UseDate", licenseInsert.UseDate);
-        //    parameter.Add("@WriteUpdate", licenseInsert.WriteUpdate);
-        //    parameter.Add("@Description", licenseInsert.Description);
-        //    parameter.Add("@Total", licenseInsert.Total);
-        //    // Sửa bán ghi license master
-        //    var masterRes = _sqlConnection.Execute(sqlUpdateMaster, parameter);
-
-        //    var sqlOldLicenseDetails = $"SELECT * FROM LicenseDetail WHERE LicenseId = @LicenseId";
-
-        //    var oldLicenseDetails = _sqlConnection.Query<LicenseDetail>(sqlOldLicenseDetails, parameter);
-        //    //  1 2 3 4 5 --- 1 2 3
-        //    // 1 2 3 4 5 --- 6 7 8 9 10
-        //    // Filter từ mảng cũ thành mảng mới vừa được push lên, thằng nào cũ có rồi thì để nguyên, chưa có thì xóa đi để push cái mới
-        //    for(int i = 0; i < oldLicenseDetails.Count(); i++)
-        //    {
-        //        var check = true;
-        //        for(int j = 0; j < licenseInsert.licenseDetails.Length; j++)
-        //        {
-        //            if (oldLicenseDetails.ElementAt(i).FixedAssetId.Equals(licenseInsert.licenseDetails[j].FixedAssetId) == true){
-        //                licenseInsert.licenseDetails = licenseInsert.licenseDetails.Where(val => val.FixedAssetId != licenseInsert.licenseDetails[j].FixedAssetId).ToArray();
-        //                check = false;
-        //                break;
-        //            }
-                    
-        //        }
-        //        if(check == true)
-        //        {
-        //            parameter.Add("@FixedAssetId", oldLicenseDetails.ElementAt(i).FixedAssetId);
-        //            var deleteOldDetail = $"DELETE FROM LicenseDetail WHERE LicenseId = @LicenseId AND FixedAssetId = @FixedAssetId";
-        //            var resDeleteOldDetail = _sqlConnection.Execute(deleteOldDetail, parameter);
-        //        }
-        //    }
-        //    var count = 0;
-        //    for (int i = 0; i < licenseInsert.licenseDetails.Length; i++)
-        //    {
-        //        // Sinh Id không trùng cho licenseDetail
-        //        licenseInsert.licenseDetails[i].LicenseDetailId = Guid.NewGuid();
-
-        //        var sqlInsertDetail = $"INSERT INTO LicenseDetail (LicenseDetailId, LicenseId, FixedAssetId, DetailJson) VALUES (@LicenseDetailId,@LicenseId,@FixedAssetId,@DetailJson)";
-
-        //        parameter.Add("@FixedAssetId", licenseInsert.licenseDetails[i].FixedAssetId);
-        //        parameter.Add("@LicenseId", licenseId);
-        //        parameter.Add("@LicenseDetailId", licenseInsert.licenseDetails[i].LicenseDetailId);
-        //        parameter.Add("@LicenseDetailId", licenseInsert.licenseDetails[i].DetailJson);
-        //        var res = _sqlConnection.Execute(sqlInsertDetail, parameter);
-        //        count += res;
-        //    }
-        //    return new
-        //    {
-        //        masterRes = masterRes,
-        //        detailRes = count
-        //    };
-        //}
+        
         /// <summary>
         /// Lấy ra bộ phận sử dụng và detail json từ detail json
         /// </summary>
